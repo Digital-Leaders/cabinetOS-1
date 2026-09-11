@@ -25,6 +25,16 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  // Parcours d acces, etape 1 -- "session persistante avec expiration" (comportement
+  // transversal demande). 7 jours correspond deja au defaut de Better-Auth : ce bloc
+  // le rend explicite plutot que de laisser un defaut implicite de la librairie
+  // gouverner un parametre sensible pour la securite. updateAge : la session est
+  // prolongee de 7 jours si l utilisateur est actif dans le dernier jour, pour eviter
+  // une deconnexion en pleine consultation.
+  session: {
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
+  },
   telemetry: {
     enabled: false,
   },
