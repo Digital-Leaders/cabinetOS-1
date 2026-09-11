@@ -2,16 +2,55 @@
   "HomePage": {
     "title": "مرحبا بكم في CabinetOS"
   },
+  "Login": {
+    "tagline": "مساحة عمل عيادتك",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "أنت@العيادة.ma",
+    "passwordLabel": "كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "submit": "تسجيل الدخول",
+    "submitting": "جارٍ تسجيل الدخول…",
+    "noAccount": "ليس لديك حساب بعد؟",
+    "createCabinet": "إنشاء عيادتي",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة. أعد المحاولة.",
+    "unexpectedError": "حدث خطأ غير متوقع. أعد المحاولة.",
+    "comingSoon": {
+      "resetPassword": "إعادة تعيين كلمة المرور قريبًا. في غضون ذلك، تواصل مع المسؤول لديك.",
+      "createCabinet": "إنشاء الحساب قريبًا. في غضون ذلك، تواصل مع المسؤول للحصول على وصول."
+    }
+  },
+  "AppHeader": {
+    "menuLabel": "قائمة المستخدم",
+    "profile": "ملفي الشخصي",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "comingSoon": {
+      "profile": "صفحة الملف الشخصي قريبًا.",
+      "settings": "صفحة الإعدادات قريبًا."
+    }
+  },
   "PatientCreate": {
     "title": "مريض جديد",
     "subhead": "أدخل المعلومات الأساسية لإنشاء الملف. يمكنك إكمال البقية في أي وقت.",
     "coreLabel": "الهوية الأساسية",
-    "requiredHint": { "prefix": "الحقول المعلّمة بـ", "suffix": "مطلوبة" },
-    "breadcrumb": { "patients": "المرضى", "current": "مريض جديد" },
+    "requiredHint": {
+      "prefix": "الحقول المعلّمة بـ",
+      "suffix": "مطلوبة"
+    },
+    "breadcrumb": {
+      "patients": "المرضى",
+      "current": "مريض جديد"
+    },
     "field": {
       "optional": "اختياري",
-      "firstName": { "label": "الاسم الشخصي", "error": "الاسم الشخصي مطلوب." },
-      "lastName": { "label": "الاسم العائلي", "error": "الاسم العائلي مطلوب." },
+      "firstName": {
+        "label": "الاسم الشخصي",
+        "error": "الاسم الشخصي مطلوب."
+      },
+      "lastName": {
+        "label": "الاسم العائلي",
+        "error": "الاسم العائلي مطلوب."
+      },
       "dateOfBirth": {
         "label": "تاريخ الميلاد",
         "unknown": "تاريخ غير معروف",
@@ -34,13 +73,29 @@
         "hint": "حرف أو حرفان يتبعهما أرقام.",
         "warning": "هذا التنسيق لا يشبه البطاقة الوطنية المعتادة. يمكنك تسجيله على أي حال."
       },
-      "sex": { "label": "الجنس", "female": "أنثى", "male": "ذكر" },
-      "coverage": { "label": "التغطية الصحية" },
-      "coverageNumber": { "label": "رقم التسجيل" },
-      "address": { "label": "العنوان" },
-      "city": { "label": "المدينة" },
-      "country": { "label": "البلد" },
-      "language": { "label": "اللغة" }
+      "sex": {
+        "label": "الجنس",
+        "female": "أنثى",
+        "male": "ذكر"
+      },
+      "coverage": {
+        "label": "التغطية الصحية"
+      },
+      "coverageNumber": {
+        "label": "رقم التسجيل"
+      },
+      "address": {
+        "label": "العنوان"
+      },
+      "city": {
+        "label": "المدينة"
+      },
+      "country": {
+        "label": "البلد"
+      },
+      "language": {
+        "label": "اللغة"
+      }
     },
     "more": {
       "toggle": "إضافة معلومات أخرى",
@@ -50,22 +105,33 @@
       "groupAddress": "العنوان والتفضيلات",
       "configurableListsNote": "ستصبح قوائم المدينة واللغة والتغطية قابلة للتخصيص من مساحة الإدارة (وحدة قادمة). قيم افتراضية في الوقت الحالي."
     },
-    "actions": { "create": "إنشاء الملف", "createAndOpen": "إنشاء وفتح" },
+    "actions": {
+      "create": "إنشاء الملف",
+      "createAndOpen": "إنشاء وفتح"
+    },
     "validation": {
       "formErrorPrefix": "تعذر إنشاء الملف. معلومات مطلوبة ناقصة:",
       "dobOrUnknown": "تاريخ الميلاد (أو « غير معروف »)",
       "noOrganization": "لم يتم تحديد أي مؤسسة — لا يمكن إنشاء الملف حاليًا.",
       "unexpected": "حدث خطأ غير متوقع. حاول مرة أخرى."
     },
-    "success": { "created": "تم إنشاء الملف." }
+    "success": {
+      "created": "تم إنشاء الملف."
+    }
   },
   "PatientConsultation": {
-    "breadcrumb": { "patients": "المرضى" },
+    "breadcrumb": {
+      "patients": "المرضى"
+    },
     "loading": "جار التحميل...",
     "notFound": "المريض غير موجود.",
     "unexpectedError": "حدث خطأ غير متوقع.",
     "noOrganization": "لم يتم تحديد أي مؤسسة — لا يمكن تحميل الملف.",
-    "status": { "active": "نشط", "archived": "مؤرشف", "deceased": "متوفى" },
+    "status": {
+      "active": "نشط",
+      "archived": "مؤرشف",
+      "deceased": "متوفى"
+    },
     "ageYears": "{age} سنة",
     "recordNumber": "الملف",
     "fullRecord": "الملف الكامل",
@@ -131,12 +197,20 @@
     "searching": "البحث جارٍ...",
     "resultCount": "{count} نتيجة · {type}",
     "noResults": "لم يتم العثور على أي مريض.",
-    "status": { "active": "نشط", "archived": "مؤرشف", "deceased": "متوفى" },
+    "status": {
+      "active": "نشط",
+      "archived": "مؤرشف",
+      "deceased": "متوفى"
+    },
     "noPhone": "الهاتف غير محدد",
     "noCoverage": "التغطية غير محددة",
     "recordNumber": "الملف",
     "ageYears": "{age} سنة",
     "unknownAge": "العمر غير معروف",
-    "type": { "name": "الاسم", "phone": "الهاتف", "cin": "البطاقة الوطنية" }
+    "type": {
+      "name": "الاسم",
+      "phone": "الهاتف",
+      "cin": "البطاقة الوطنية"
+    }
   }
 }

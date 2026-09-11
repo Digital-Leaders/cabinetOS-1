@@ -1,0 +1,179 @@
+/*
+ * Ecran de connexion -- port fidele de docs/design/maquettes/connexion.html.
+ * Couleurs d'erreur (#c0392b / #fbeae8 / #e4b5af / #8e2a20) identiques a celles
+ * deja utilisees dans create-patient-form.css -- meme palette que le reste du
+ * produit, pas une nouvelle direction.
+ */
+
+.lf-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(1100px 600px at 50% -10%, var(--wash2) 0%, rgba(232, 240, 241, 0) 60%),
+    var(--wash);
+}
+
+.lf-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 34px 32px 30px;
+}
+
+.lf-brand {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1px;
+  margin-bottom: 6px;
+}
+.lf-brand .b1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+}
+.lf-brand .b2 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--teal);
+}
+.lf-tagline {
+  text-align: center;
+  color: var(--grey);
+  font-size: 13px;
+  margin: 0 0 28px;
+}
+
+.lf-field {
+  margin-top: 16px;
+}
+.lf-field:first-of-type {
+  margin-top: 0;
+}
+.lf-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.lf-field input {
+  width: 100%;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--ink);
+  padding: 11px 13px;
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  background: var(--white);
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+.lf-field input::placeholder {
+  color: #647079;
+}
+.lf-field input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(14, 110, 120, 0.12);
+}
+.lf-field.error input {
+  border-color: #c0392b;
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+}
+
+.lf-pw-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.lf-forgot {
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--teal);
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.lf-forgot:hover {
+  color: var(--teald);
+}
+
+.lf-btn {
+  width: 100%;
+  margin-top: 24px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.lf-btn:hover:not(:disabled) {
+  background: var(--teald);
+}
+.lf-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.lf-form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fbeae8;
+  border: 1px solid #e4b5af;
+  color: #8e2a20;
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.lf-coming-soon {
+  background: var(--wash2);
+  border: 1px solid var(--rule);
+  color: var(--teald);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.lf-foot {
+  text-align: center;
+  color: var(--grey);
+  font-size: 12px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--wash);
+}
+.lf-link {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--teal);
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.lf-link:hover {
+  color: var(--teald);
+}

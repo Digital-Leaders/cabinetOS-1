@@ -2,16 +2,55 @@
   "HomePage": {
     "title": "Bienvenue sur CabinetOS"
   },
+  "Login": {
+    "tagline": "L'espace de travail de votre cabinet",
+    "emailLabel": "E-mail",
+    "emailPlaceholder": "vous@cabinet.ma",
+    "passwordLabel": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "submit": "Se connecter",
+    "submitting": "Connexion…",
+    "noAccount": "Pas encore de compte ?",
+    "createCabinet": "Créer mon cabinet",
+    "invalidCredentials": "E-mail ou mot de passe incorrect. Réessayez.",
+    "unexpectedError": "Une erreur inattendue est survenue. Réessayez.",
+    "comingSoon": {
+      "resetPassword": "La réinitialisation de mot de passe arrive bientôt. En attendant, contactez votre administrateur.",
+      "createCabinet": "La création de compte arrive bientôt. En attendant, contactez votre administrateur pour obtenir un accès."
+    }
+  },
+  "AppHeader": {
+    "menuLabel": "Menu utilisateur",
+    "profile": "Mon profil",
+    "settings": "Réglages",
+    "logout": "Se déconnecter",
+    "comingSoon": {
+      "profile": "La page de profil arrive bientôt.",
+      "settings": "La page de réglages arrive bientôt."
+    }
+  },
   "PatientCreate": {
     "title": "Nouveau patient",
     "subhead": "Saisissez l'essentiel pour créer la fiche. Vous pourrez compléter le reste à tout moment.",
     "coreLabel": "Identité minimale",
-    "requiredHint": { "prefix": "Champs marqués", "suffix": "requis" },
-    "breadcrumb": { "patients": "Patients", "current": "Nouveau patient" },
+    "requiredHint": {
+      "prefix": "Champs marqués",
+      "suffix": "requis"
+    },
+    "breadcrumb": {
+      "patients": "Patients",
+      "current": "Nouveau patient"
+    },
     "field": {
       "optional": "facultatif",
-      "firstName": { "label": "Prénom", "error": "Le prénom est requis." },
-      "lastName": { "label": "Nom", "error": "Le nom est requis." },
+      "firstName": {
+        "label": "Prénom",
+        "error": "Le prénom est requis."
+      },
+      "lastName": {
+        "label": "Nom",
+        "error": "Le nom est requis."
+      },
       "dateOfBirth": {
         "label": "Date de naissance",
         "unknown": "Date inconnue",
@@ -34,13 +73,29 @@
         "hint": "Carte nationale — 1 ou 2 lettres suivies de chiffres.",
         "warning": "Ce format ne ressemble pas à une CIN habituelle. Vous pouvez l'enregistrer quand même."
       },
-      "sex": { "label": "Sexe", "female": "Féminin", "male": "Masculin" },
-      "coverage": { "label": "Couverture / prise en charge" },
-      "coverageNumber": { "label": "N° d'immatriculation" },
-      "address": { "label": "Adresse" },
-      "city": { "label": "Ville" },
-      "country": { "label": "Pays" },
-      "language": { "label": "Langue" }
+      "sex": {
+        "label": "Sexe",
+        "female": "Féminin",
+        "male": "Masculin"
+      },
+      "coverage": {
+        "label": "Couverture / prise en charge"
+      },
+      "coverageNumber": {
+        "label": "N° d'immatriculation"
+      },
+      "address": {
+        "label": "Adresse"
+      },
+      "city": {
+        "label": "Ville"
+      },
+      "country": {
+        "label": "Pays"
+      },
+      "language": {
+        "label": "Langue"
+      }
     },
     "more": {
       "toggle": "Ajouter plus d'informations",
@@ -50,22 +105,33 @@
       "groupAddress": "Adresse & préférences",
       "configurableListsNote": "Les listes Ville, Langue et Couverture seront personnalisables par le cabinet depuis l'espace admin (module à venir). Valeurs par défaut pour l'instant."
     },
-    "actions": { "create": "Créer la fiche", "createAndOpen": "Créer et ouvrir" },
+    "actions": {
+      "create": "Créer la fiche",
+      "createAndOpen": "Créer et ouvrir"
+    },
     "validation": {
       "formErrorPrefix": "Impossible de créer la fiche. Il manque des informations obligatoires :",
       "dobOrUnknown": "date de naissance (ou « inconnue »)",
       "noOrganization": "Aucune organisation sélectionnée — impossible de créer la fiche pour le moment.",
       "unexpected": "Une erreur inattendue est survenue. Réessayez."
     },
-    "success": { "created": "Fiche créée." }
+    "success": {
+      "created": "Fiche créée."
+    }
   },
   "PatientConsultation": {
-    "breadcrumb": { "patients": "Patients" },
+    "breadcrumb": {
+      "patients": "Patients"
+    },
     "loading": "Chargement...",
     "notFound": "Patient introuvable.",
     "unexpectedError": "Une erreur inattendue est survenue.",
     "noOrganization": "Aucune organisation sélectionnée — impossible de charger la fiche.",
-    "status": { "active": "Actif", "archived": "Archivé", "deceased": "Décédé" },
+    "status": {
+      "active": "Actif",
+      "archived": "Archivé",
+      "deceased": "Décédé"
+    },
     "ageYears": "{age} ans",
     "recordNumber": "Dossier",
     "fullRecord": "Fiche complète",
@@ -131,12 +197,20 @@
     "searching": "Recherche en cours...",
     "resultCount": "{count} résultat(s) · {type}",
     "noResults": "Aucun patient trouvé.",
-    "status": { "active": "Actif", "archived": "Archivé", "deceased": "Décédé" },
+    "status": {
+      "active": "Actif",
+      "archived": "Archivé",
+      "deceased": "Décédé"
+    },
     "noPhone": "téléphone non renseigné",
     "noCoverage": "couverture non renseignée",
     "recordNumber": "Dossier",
     "ageYears": "{age} ans",
     "unknownAge": "âge inconnu",
-    "type": { "name": "nom", "phone": "téléphone", "cin": "CIN" }
+    "type": {
+      "name": "nom",
+      "phone": "téléphone",
+      "cin": "CIN"
+    }
   }
 }
