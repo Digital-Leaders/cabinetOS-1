@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { PatientConsultationView } from '../../../../features/patients/patient-consultation-view';
+import { AppHeader } from '../../../../features/app-shell/app-header';
 import '../../../../styles/cabinetos-tokens.css';
 
 export default async function PatientConsultationPage({
@@ -12,12 +13,7 @@ export default async function PatientConsultationPage({
 
   return (
     <div className="cos-body">
-      <div className="cos-topbar">
-        <div className="cos-brand">
-          Cabinet<span>OS</span>
-        </div>
-        <div className="cos-crumb">{t('breadcrumb.patients')}</div>
-      </div>
+      <AppHeader locale={locale} breadcrumb={t('breadcrumb.patients')} />
       <PatientConsultationView patientId={id} />
     </div>
   );
