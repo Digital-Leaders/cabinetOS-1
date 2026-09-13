@@ -12,9 +12,10 @@ import './app-header.css';
 // Header applicatif -- port fidele de docs/design/maquettes/changement-organisation.html :
 // menu utilisateur (commit 1) + selecteur d'organisation (commit 3, ce lot).
 //
-// Profil et Reglages n'ont pas d'ecran construit dans ce Build (hors perimetre de
-// l etape 1) : memes reperes "bientot disponible" que dans LoginForm plutot que des
-// liens morts.
+// Profil n'a pas d'ecran construit dans ce Build (hors perimetre de l etape 1) :
+// meme repere "bientot disponible" que dans LoginForm plutot qu un lien mort.
+// Reglages a un vrai ecran depuis le commit 4 (reglage organisation par defaut,
+// ADR-0019).
 //
 // La session est lue au montage via get-session (jamais mise en cache localement --
 // source de verite unique cote serveur). Si elle est absente ici, c est que le
@@ -222,7 +223,10 @@ export function AppHeader({
             <button
               type="button"
               className="ah-usr-item"
-              onClick={() => showComingSoon(t('comingSoon.settings'))}
+              onClick={() => {
+                setMenuOpen(false);
+                router.push(`/${locale}/settings`);
+              }}
             >
               {t('settings')}
             </button>

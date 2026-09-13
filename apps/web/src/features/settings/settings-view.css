@@ -1,0 +1,132 @@
+/*
+ * Ecran Reglages -- pas de maquette dediee fournie (seule "modifiable dans vos
+ * reglages" est mentionnee dans la spec choix-organisation.html) : style aligne
+ * sur les autres ecrans (mono badge, palette partagee) plutot qu'invente.
+ */
+
+.stv-content {
+  max-width: 640px;
+  margin: 34px auto;
+  padding: 0 20px;
+}
+
+.stv-content h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+.stv-sub {
+  color: var(--grey);
+  font-size: 13.5px;
+  margin: 0 0 24px;
+}
+
+.stv-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin: 0 0 10px;
+}
+
+.stv-loading {
+  color: var(--grey);
+  font-size: 13.5px;
+  padding: 12px 0;
+}
+
+.stv-error {
+  background: #fbeae8;
+  border: 1px solid #e4b5af;
+  color: #8e2a20;
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.stv-confirmation {
+  background: var(--greenbg);
+  border: 1px solid var(--rule);
+  color: var(--teald);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.stv-org {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 13px 16px;
+  margin-bottom: 10px;
+}
+.stv-org .mono {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--wash2);
+  color: var(--teald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex: none;
+}
+.stv-org .nm {
+  flex: 1;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.stv-current-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--teald);
+  background: var(--wash2);
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  padding: 4px 10px;
+  flex: none;
+}
+
+.stv-set-default-btn {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 7px 12px;
+  cursor: pointer;
+  flex: none;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+}
+.stv-set-default-btn:hover:not(:disabled) {
+  background: var(--wash);
+  border-color: var(--teal);
+}
+.stv-set-default-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.stv-hint {
+  color: var(--grey);
+  font-size: 12.5px;
+  margin-top: 12px;
+}
