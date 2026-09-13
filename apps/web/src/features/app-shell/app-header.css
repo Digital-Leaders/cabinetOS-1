@@ -1,9 +1,6 @@
 /*
- * Header applicatif -- port partiel de docs/design/maquettes/changement-organisation.html :
- * seule la partie "menu utilisateur" (avatar, nom/e-mail, deconnexion) est construite
- * ici. Le selecteur d'organisation (haut a gauche dans la maquette) arrive dans le
- * commit dedie au changement d'organisation en cours de session -- ce header sera
- * complete a ce moment-la, pas duplique.
+ * Header applicatif -- port fidele de docs/design/maquettes/changement-organisation.html :
+ * menu utilisateur (commit 1) + selecteur d'organisation (commit 3, ce lot).
  */
 
 .ah-topbar {
@@ -34,6 +31,140 @@
   font-weight: 700;
   letter-spacing: -0.3px;
   color: var(--teal);
+}
+
+.ah-divider {
+  width: 1px;
+  height: 26px;
+  background: var(--rule);
+  flex: none;
+}
+
+.ah-orgsw {
+  position: relative;
+}
+.ah-orgsw-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+}
+.ah-orgsw-btn:hover,
+.ah-orgsw-btn.open {
+  background: var(--wash);
+  border-color: var(--rule);
+}
+.ah-orgsw-btn .mono {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: var(--wash2);
+  color: var(--teald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex: none;
+}
+.ah-orgsw-btn .cur {
+  text-align: start;
+  line-height: 1.2;
+}
+.ah-orgsw-btn .cur .lab {
+  font-size: 10px;
+  color: var(--grey);
+  font-weight: 500;
+}
+.ah-orgsw-btn .cur .nm {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 600;
+}
+.ah-orgsw-btn .chev {
+  color: var(--grey);
+  font-size: 11px;
+  transition: transform 0.15s;
+}
+.ah-orgsw-btn.open .chev {
+  transform: rotate(180deg);
+}
+
+.ah-orgsw-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline-start: 0;
+  width: 280px;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 6px;
+  z-index: 20;
+}
+.ah-orgsw-menu .mtitle {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--grey);
+  padding: 8px 10px 6px;
+}
+.ah-orgitem {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  text-align: start;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.1s;
+}
+.ah-orgitem:hover:not(:disabled) {
+  background: var(--wash);
+}
+.ah-orgitem:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.ah-orgitem.active {
+  background: var(--wash);
+}
+.ah-orgitem .mono {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: var(--wash2);
+  color: var(--teald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex: none;
+}
+.ah-orgitem .nm {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.ah-orgitem .check {
+  color: var(--teal);
+  font-size: 15px;
+  flex: none;
 }
 
 .ah-spacer {

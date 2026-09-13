@@ -38,7 +38,9 @@
     "comingSoon": {
       "profile": "صفحة الملف الشخصي قريبًا.",
       "settings": "صفحة الإعدادات قريبًا."
-    }
+    },
+    "organizationLabel": "المؤسسة",
+    "switchOrganization": "تغيير المؤسسة"
   },
   "PatientCreate": {
     "title": "مريض جديد",

@@ -38,7 +38,9 @@
     "comingSoon": {
       "profile": "La page de profil arrive bientôt.",
       "settings": "La page de réglages arrive bientôt."
-    }
+    },
+    "organizationLabel": "Organisation",
+    "switchOrganization": "Changer d'organisation"
   },
   "PatientCreate": {
     "title": "Nouveau patient",
