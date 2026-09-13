@@ -30,6 +30,19 @@
     "rememberChoice": "Ouvrir directement l'organisation choisie à l'avenir",
     "rememberChoiceHint": "Modifiable à tout moment dans vos réglages."
   },
+  "Settings": {
+    "title": "Réglages",
+    "subtitle": "Gérez vos préférences de connexion.",
+    "sectionTitle": "Organisation par défaut",
+    "loading": "Chargement de vos organisations…",
+    "loadError": "Impossible de récupérer vos organisations. Réessayez.",
+    "saveError": "Impossible d'enregistrer ce choix. Réessayez.",
+    "savedConfirmation": "Organisation par défaut mise à jour.",
+    "currentDefault": "Par défaut",
+    "setAsDefault": "Définir par défaut",
+    "saving": "Enregistrement…",
+    "singleOrgHint": "Vous n'appartenez qu'à une seule organisation : elle s'ouvre toujours directement à la connexion."
+  },
   "AppHeader": {
     "menuLabel": "Menu utilisateur",
     "profile": "Mon profil",

@@ -99,7 +99,7 @@ describe('AppHeader (comportement)', () => {
     await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/fr/login'));
   });
 
-  it('Profil et Reglages affichent un message bientot disponible, jamais une page morte', async () => {
+  it('Profil affiche un message bientot disponible, jamais une page morte', async () => {
     const user = userEvent.setup();
     render(<AppHeader locale="fr" />);
 
@@ -109,6 +109,18 @@ describe('AppHeader (comportement)', () => {
 
     expect(await screen.findByRole('status')).toHaveTextContent(/bientôt/);
     expect(signOutMock).not.toHaveBeenCalled();
+  });
+
+  it('Reglages navigue vers l ecran reel (commit 4), jamais un message bientot disponible', async () => {
+    const user = userEvent.setup();
+    render(<AppHeader locale="fr" />);
+
+    await user.click(screen.getByLabelText('Menu utilisateur'));
+    await screen.findByText('Fatima Bennani');
+    await user.click(screen.getByRole('button', { name: 'Réglages' }));
+
+    expect(pushMock).toHaveBeenCalledWith('/fr/settings');
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
   it('affiche l organisation courante dans le selecteur', async () => {
