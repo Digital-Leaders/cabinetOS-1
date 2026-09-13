@@ -36,9 +36,9 @@ Mise à jour du cache **dans la même transaction** que l'opération qui la rend
 nécessaire — jamais une synchronisation différée :
 - `createMembership` (déjà exécutée via `withOrganizationScope`, donc déjà dans
   une transaction) ajoute l'entrée correspondante à `organization_memberships`
-  de l'utilisateur concerné ; si c'est sa première adhésion, `isDefault: true`
-  automatiquement (une seule organisation = la destination, sans action de
-  l'utilisateur).
+  de l'utilisateur concerné, toujours avec `isDefault: false` — jamais de
+  défaut automatique, y compris pour une première adhésion (voir Justification :
+  le cas « une seule organisation » n'en a pas besoin).
 - `deleteMembership` retire l'entrée correspondante.
 - Une nouvelle fonction `setDefaultMembership` (lecture-écriture ordinaire sur
   `users`, aucun scope requis) positionne `isDefault: true` sur l'entrée
@@ -47,8 +47,9 @@ nécessaire — jamais une synchronisation différée :
 
 La résolution à la connexion se réduit à une lecture de
 `users.organization_memberships` :
-- 1 entrée → ouverture directe (l'unique organisation, quel que soit son
-  `isDefault`).
+- 1 entrée → ouverture directe (l'unique organisation, **quel que soit son
+  `isDefault`** — ce cas ne dépend jamais du drapeau, seulement du nombre
+  d'entrées).
 - Plusieurs entrées, une avec `isDefault: true` → ouverture de celle-ci.
 - Plusieurs entrées, aucun défaut → écran de choix, alimenté directement par
   le tableau (aucune requête supplémentaire pour l'afficher).

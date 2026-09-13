@@ -1,13 +1,7 @@
-// Aucun ecran de connexion ni de selection d'organisation n'existe encore dans le
-// frontend (hors perimetre de ce brief, qui ne nomme que les 3 ecrans du module
-// Patient). En attendant cette brique, l'organisation courante est lue depuis un
-// cookie pose par un flux de connexion futur -- ce fichier ne fait que la lire,
-// il n'invente aucune logique de connexion.
-//
-// Signale explicitement (pas improvise) : quand l'ecran de connexion / selection
-// d'organisation existera, cette fonction devra etre mise a jour pour lire son
-// mecanisme reel (probablement le meme cookie, ou un contexte React) -- a discuter
-// avec l'encadrant si le mecanisme choisi differe.
+// Parcours d'acces, etape 1, commit 2 : le mecanisme reel arrive -- le cookie est
+// desormais pose par la resolution d'organisation a la connexion
+// (resolve-organization.ts, appele depuis LoginForm) et par l ecran de choix
+// (choose-organization-view.tsx), plutot que suppose par un flux futur.
 
 const ORGANIZATION_COOKIE = 'cabinetos_organization_id';
 
@@ -17,4 +11,17 @@ export function getOrganizationId(): string | null {
   }
   const match = document.cookie.match(new RegExp(`(?:^|; )${ORGANIZATION_COOKIE}=([^;]+)`));
   return match ? decodeURIComponent(match[1]) : null;
+}
+
+// Cookie non httpOnly (lisible/modifiable en JS cote client) : il ne porte qu une
+// preference d affichage (quelle organisation ouvrir), jamais une autorisation --
+// la securite reelle reste entierement cote API (chaque requete revalide la
+// permission de l utilisateur dans cette organisation precise, guard deja en
+// place). SameSite=Lax, 1 an : une simple commodite de navigation, pas une donnee
+// sensible.
+export function setOrganizationId(organizationId: string): void {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  document.cookie = `${ORGANIZATION_COOKIE}=${encodeURIComponent(organizationId)}; path=/; max-age=31536000; SameSite=Lax`;
 }

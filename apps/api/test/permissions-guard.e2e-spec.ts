@@ -214,4 +214,26 @@ describe('Guards Role/Permission (e2e, TASK-016)', () => {
     });
     expect(res.status).toBe(403);
   });
+
+  it('@RequireAuthentication() (ADR-0019) : refuse sans session, meme sans organisation demandee', async () => {
+    const res = await fetch(`${httpServer}/api/v1/test-guard/authenticated-only`);
+    expect(res.status).toBe(401);
+  });
+
+  it('@RequireAuthentication() (ADR-0019) : autorise avec une session valide, SANS en-tete x-organization-id', async () => {
+    const signInRes = await fetch(`${httpServer}/api/v1/auth/sign-in/email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: origin },
+      body: JSON.stringify({ email: testEmail, password: testPassword }),
+    });
+    const cookie = (signInRes.headers.get('set-cookie') as string).split(';')[0];
+
+    const res = await fetch(`${httpServer}/api/v1/test-guard/authenticated-only`, {
+      headers: { Cookie: cookie },
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.data.ok).toBe(true);
+    expect(typeof body.data.userId).toBe('string');
+  });
 });
