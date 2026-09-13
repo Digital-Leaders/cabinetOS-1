@@ -43,7 +43,8 @@ describe('OpenAPI docs (e2e)', () => {
     expect(paths).toEqual(
       expect.arrayContaining([
         '/api/v1/health',
-        '/api/v1/identity',
+        '/api/v1/identity/organizations',
+        '/api/v1/identity/organizations/{organizationId}/default',
         '/api/v1/organizations',
         '/api/v1/roles',
         '/api/v1/audit-events',

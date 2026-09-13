@@ -1,9 +1,16 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, text, timestamp, boolean, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, jsonb, index } from 'drizzle-orm/pg-core';
 
 // Schema genere par `better-auth generate` (usePlural: true), puis complete avec deletedAt.
 // Les types de colonnes (text pour l id, pas uuid) suivent la convention interne de Better-Auth :
 // a revérifier lors de l integration reelle en TASK-013.
+
+// Parcours d'acces, etape 1, commit 2 (ADR-0019) : forme de organization_memberships.
+export interface OrganizationMembershipSummary {
+  organizationId: string;
+  organizationName: string;
+  isDefault: boolean;
+}
 
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
@@ -17,6 +24,14 @@ export const users = pgTable('users', {
     .$onUpdate(() => new Date())
     .notNull(),
   deletedAt: timestamp('deleted_at'),
+  // ADR-0019 : cache des adhesions, sur le compte (jamais RLS) plutot que sur
+  // memberships (RLS forcee) -- necessaire pour resoudre l organisation a la
+  // connexion sans contexte d organisation deja etabli. Mis a jour dans la meme
+  // transaction que createMembership/deleteMembership (organization.queries.ts).
+  organizationMemberships: jsonb('organization_memberships')
+    .$type<OrganizationMembershipSummary[]>()
+    .notNull()
+    .default([]),
 });
 
 export const sessions = pgTable(

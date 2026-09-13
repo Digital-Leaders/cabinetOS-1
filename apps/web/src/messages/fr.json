@@ -17,7 +17,18 @@
     "comingSoon": {
       "resetPassword": "La réinitialisation de mot de passe arrive bientôt. En attendant, contactez votre administrateur.",
       "createCabinet": "La création de compte arrive bientôt. En attendant, contactez votre administrateur pour obtenir un accès."
-    }
+    },
+    "noOrganization": "Aucune organisation associée à ce compte. Contactez votre administrateur."
+  },
+  "ChooseOrganization": {
+    "title": "Choisissez une organisation",
+    "subtitle": "Vous appartenez à plusieurs organisations. Laquelle voulez-vous ouvrir ?",
+    "loading": "Chargement de vos organisations…",
+    "loadError": "Impossible de récupérer vos organisations. Réessayez.",
+    "pickError": "Impossible d'ouvrir cette organisation. Réessayez.",
+    "defaultTag": "Par défaut",
+    "rememberChoice": "Ouvrir directement l'organisation choisie à l'avenir",
+    "rememberChoiceHint": "Modifiable à tout moment dans vos réglages."
   },
   "AppHeader": {
     "menuLabel": "Menu utilisateur",

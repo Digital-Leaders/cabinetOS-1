@@ -1,0 +1,173 @@
+/*
+ * Ecran de choix d'organisation -- port fidele de
+ * docs/design/maquettes/choix-organisation.html.
+ */
+
+.co-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(1100px 600px at 50% -10%, var(--wash2) 0%, rgba(232, 240, 241, 0) 60%),
+    var(--wash);
+}
+
+.co-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px 30px 26px;
+}
+
+.co-brand {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1px;
+  margin-bottom: 22px;
+}
+.co-brand .b1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--ink);
+}
+.co-brand .b2 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--teal);
+}
+
+.co-card h1 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  margin: 0 0 4px;
+  text-align: center;
+}
+.co-sub {
+  color: var(--grey);
+  font-size: 13.5px;
+  text-align: center;
+  margin: 0 0 24px;
+}
+
+.co-loading {
+  text-align: center;
+  color: var(--grey);
+  font-size: 13.5px;
+  padding: 20px 0;
+}
+
+.co-error {
+  background: #fbeae8;
+  border: 1px solid #e4b5af;
+  color: #8e2a20;
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.co-org {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: start;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 15px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    border-color 0.12s,
+    background 0.12s,
+    box-shadow 0.12s;
+}
+.co-org:hover:not(:disabled) {
+  border-color: var(--teal);
+  background: var(--wash);
+  box-shadow: 0 2px 10px rgba(14, 110, 120, 0.08);
+}
+.co-org:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.co-org .mono {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--wash2);
+  color: var(--teald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex: none;
+}
+.co-org .name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.co-org .go {
+  color: var(--grey);
+  font-size: 18px;
+  flex: none;
+}
+.co-org:hover:not(:disabled) .go {
+  color: var(--teal);
+}
+.co-org .default-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--teald);
+  background: var(--wash2);
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  padding: 3px 9px;
+  flex: none;
+}
+
+.co-default-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--wash);
+  font-size: 13px;
+  color: var(--grey);
+}
+.co-default-row input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--teal);
+  cursor: pointer;
+  margin: 0;
+  flex: none;
+}
+.co-default-row label {
+  cursor: pointer;
+  user-select: none;
+}
+.co-default-row .hint {
+  display: block;
+  font-size: 11.5px;
+  color: #647079;
+  margin-top: 2px;
+}

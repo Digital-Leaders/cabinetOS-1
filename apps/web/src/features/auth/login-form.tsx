@@ -4,6 +4,9 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { signInWithEmail, AuthError } from '../../lib/auth-client';
+import { fetchMyOrganizations } from '../../lib/identity-client';
+import { resolveOrganization } from '../../lib/resolve-organization';
+import { setOrganizationId } from '../../lib/session';
 import './login-form.css';
 
 // Ecran 1 (connexion) -- port fidele de docs/design/maquettes/connexion.html et de
@@ -11,10 +14,10 @@ import './login-form.css';
 // (champs non vides, surlignes si manquants) : les identifiants eux-memes ne sont
 // jamais valides ici, uniquement par Better-Auth cote serveur (auth-client.ts).
 //
-// Redirection apres connexion reussie : vers l accueil pour l instant. La
-// resolution d organisation (une seule -> directe ; plusieurs + defaut -> defaut ;
-// plusieurs sans defaut -> ecran de choix) est un commit dedie de la spec, pas
-// construite ici.
+// Commit 2 (ADR-0019) : apres connexion reussie, resolution d'organisation --
+// une seule -> ouverture directe (cookie pose, accueil) ; plusieurs + defaut ->
+// ouverture directe du defaut ; plusieurs sans defaut -> ecran de choix (aucun
+// cookie pose ici, choose-organization-view.tsx s en charge apres selection).
 //
 // "Mot de passe oublie" et "Creer mon cabinet" sont des reperes gardes visibles
 // (decision Product Owner) mais menent a des etapes reportees (reinitialisation,
@@ -50,7 +53,19 @@ export function LoginForm({ locale }: { locale: string }) {
     setSubmitting(true);
     try {
       await signInWithEmail(trimmedEmail, password);
-      router.push(`/${locale}`);
+
+      const memberships = await fetchMyOrganizations();
+      const resolution = resolveOrganization(memberships);
+      if (resolution.type === 'direct') {
+        setOrganizationId(resolution.organizationId);
+        router.push(`/${locale}`);
+      } else if (resolution.type === 'choose') {
+        router.push(`/${locale}/choose-organization`);
+      } else {
+        // "none" : hors perimetre de l etape 1 (comptes toujours crees avec au
+        // moins une adhesion) -- signale plutot qu un ecran invente sans besoin reel.
+        setFormErrorMessage(t('noOrganization'));
+      }
     } catch (err) {
       setFormErrorMessage(
         err instanceof AuthError ? t('invalidCredentials') : t('unexpectedError'),
