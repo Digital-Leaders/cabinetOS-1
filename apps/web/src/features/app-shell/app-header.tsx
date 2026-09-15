@@ -7,6 +7,7 @@ import { getSession, signOut, type AuthUser } from '../../lib/auth-client';
 import { fetchMyOrganizations, type OrganizationMembership } from '../../lib/identity-client';
 import { getOrganizationId, setOrganizationId } from '../../lib/session';
 import { hardNavigate } from '../../lib/navigation';
+import { initials } from '../../lib/initials';
 import './app-header.css';
 
 // Header applicatif -- port fidele de docs/design/maquettes/changement-organisation.html :
@@ -33,12 +34,6 @@ import './app-header.css';
 // ne peut survivre dans un etat React quelconque. La preuve que l'API elle-meme
 // isole correctement (jamais de reliquat cote serveur) est testee independamment
 // (tests/isolation/organization-switch-isolation.spec.ts).
-
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0] ?? ''}${parts[parts.length - 1][0] ?? ''}`.toUpperCase();
-}
 
 export function AppHeader({
   locale,

@@ -7,6 +7,7 @@ import {
   setDefaultOrganization,
   type OrganizationMembership,
 } from '../../lib/identity-client';
+import { initials } from '../../lib/initials';
 import './settings-view.css';
 
 // Ecran Reglages -- reglage "organisation par defaut" (ADR-0019). Reutilise
@@ -19,12 +20,6 @@ import './settings-view.css';
 // connexion -- il ne change jamais l'organisation courante de la session en
 // cours (ca, c'est le role du selecteur d'organisation, commit 3). Les deux
 // mecanismes sont independants, volontairement.
-
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
-}
 
 export function SettingsView() {
   const t = useTranslations('Settings');

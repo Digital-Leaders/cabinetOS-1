@@ -9,6 +9,7 @@ import {
   type OrganizationMembership,
 } from '../../lib/identity-client';
 import { setOrganizationId } from '../../lib/session';
+import { initials } from '../../lib/initials';
 import './choose-organization-view.css';
 
 // Ecran 2 (choix d'organisation) -- port fidele de
@@ -19,12 +20,6 @@ import './choose-organization-view.css';
 // La case "Ouvrir directement l'organisation choisie a l'avenir" appelle
 // setDefaultOrganization AVANT de rediriger, seulement si cochee -- sinon aucun
 // defaut n est pose, l utilisateur repassera par cet ecran a sa prochaine connexion.
-
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
-}
 
 export function ChooseOrganizationView({ locale }: { locale: string }) {
   const t = useTranslations('ChooseOrganization');
