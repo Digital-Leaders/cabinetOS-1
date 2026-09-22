@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CabinetOS — Changement d'organisation (maquette)</title>
+<style>
+  :root{
+    color-scheme:light;
+    --ink:#1A2B34; --teal:#0E6E78; --teald:#0A4C54; --grey:#566169;
+    --rule:#D8DFE2; --wash:#F2F6F7; --wash2:#E8F0F1; --white:#fff;
+    --greenbg:#E7F3EC; --green:#1E7A46;
+    --shadow:0 1px 2px rgba(26,43,52,.04),0 8px 24px rgba(26,43,52,.10);
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#F2F6F7 !important}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#F2F6F7;color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;min-height:100vh}
+
+  /* ---- App header ---- */
+  .topbar{
+    background:var(--white);border-bottom:1px solid var(--rule);height:58px;
+    display:flex;align-items:center;gap:18px;padding:0 20px;position:relative;
+  }
+  .brand{display:flex;align-items:baseline;gap:1px;flex:none}
+  .brand .b1{font-size:16px;font-weight:700;letter-spacing:-.3px;color:var(--ink)}
+  .brand .b2{font-size:16px;font-weight:700;letter-spacing:-.3px;color:var(--teal)}
+
+  .divider{width:1px;height:26px;background:var(--rule);flex:none}
+
+  /* org switcher */
+  .orgsw{position:relative}
+  .orgsw-btn{
+    display:flex;align-items:center;gap:10px;background:none;border:1px solid transparent;border-radius:9px;
+    padding:7px 10px;cursor:pointer;font-family:inherit;transition:background .12s,border-color .12s;
+  }
+  .orgsw-btn:hover{background:var(--wash);border-color:var(--rule)}
+  .orgsw-btn.open{background:var(--wash);border-color:var(--rule)}
+  .orgsw-btn .mono{width:28px;height:28px;border-radius:7px;background:var(--wash2);color:var(--teald);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
+  .orgsw-btn .cur{text-align:left;line-height:1.2}
+  .orgsw-btn .cur .lab{font-size:10px;color:var(--grey);font-weight:500}
+  .orgsw-btn .cur .nm{font-size:14px;color:var(--ink);font-weight:600}
+  .orgsw-btn .chev{color:var(--grey);font-size:11px;transition:transform .15s}
+  .orgsw-btn.open .chev{transform:rotate(180deg)}
+
+  .orgsw-menu{
+    position:absolute;top:calc(100% + 6px);left:0;width:280px;background:var(--white);
+    border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:6px;display:none;z-index:20;
+  }
+  .orgsw-menu.open{display:block}
+  .orgsw-menu .mtitle{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--grey);padding:8px 10px 6px}
+  .orgitem{
+    display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:none;
+    border-radius:8px;padding:9px 10px;cursor:pointer;font-family:inherit;transition:background .1s;
+  }
+  .orgitem:hover{background:var(--wash)}
+  .orgitem .mono{width:30px;height:30px;border-radius:7px;background:var(--wash2);color:var(--teald);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
+  .orgitem .nm{flex:1;font-size:14px;font-weight:600;color:var(--ink)}
+  .orgitem .check{color:var(--teal);font-size:15px;flex:none}
+  .orgitem.active{background:var(--wash)}
+
+  .spacer{flex:1}
+
+  /* user menu */
+  .usr{position:relative}
+  .usr-btn{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;font-family:inherit;padding:5px;border-radius:9px;transition:background .12s}
+  .usr-btn:hover{background:var(--wash)}
+  .usr-btn .av{width:32px;height:32px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+  .usr-menu{
+    position:absolute;top:calc(100% + 6px);right:0;width:220px;background:var(--white);
+    border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow);padding:6px;display:none;z-index:20;
+  }
+  .usr-menu.open{display:block}
+  .usr-head{padding:10px 11px;border-bottom:1px solid var(--wash);margin-bottom:5px}
+  .usr-head .nm{font-size:14px;font-weight:600;color:var(--ink)}
+  .usr-head .em{font-size:12px;color:var(--grey)}
+  .usr-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-radius:8px;padding:9px 11px;cursor:pointer;font-family:inherit;font-size:13.5px;color:var(--ink);transition:background .1s}
+  .usr-item:hover{background:var(--wash)}
+  .usr-item.danger{color:#B3352B}
+  .usr-item.danger:hover{background:#FBEAE8}
+
+  /* body */
+  .content{max-width:900px;margin:34px auto;padding:0 20px}
+  .greet{font-size:22px;font-weight:700;letter-spacing:-.2px;margin:0 0 4px}
+  .greet .org-echo{color:var(--teald);font-weight:700}
+  .greetsub{color:#46505A;font-size:14px;margin:0 0 26px}
+  .stub{background:var(--white);border:1px dashed var(--rule);border-radius:var(--radius);padding:30px;text-align:center;color:#647079;font-size:13.5px}
+
+  .pagenote{max-width:900px;margin:20px auto 0;padding:0 20px;color:var(--grey);font-size:11.5px;line-height:1.5}
+  .pagenote b{color:var(--teald)}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand"><span class="b1">Cabinet</span><span class="b2">OS</span></div>
+    <div class="divider"></div>
+
+    <!-- ORG SWITCHER -->
+    <div class="orgsw">
+      <button class="orgsw-btn" id="orgBtn" onclick="toggleOrg()">
+        <span class="mono" id="curMono">CE</span>
+        <span class="cur">
+          <span class="lab">Organisation</span>
+          <span class="nm" id="curName">Cabinet El Amrani</span>
+        </span>
+        <span class="chev">▼</span>
+      </button>
+      <div class="orgsw-menu" id="orgMenu">
+        <div class="mtitle">Changer d'organisation</div>
+        <button class="orgitem active" onclick="switchOrg('Cabinet El Amrani','CE',this)">
+          <span class="mono">CE</span><span class="nm">Cabinet El Amrani</span><span class="check">✓</span>
+        </button>
+        <button class="orgitem" onclick="switchOrg('Clinique Al Andalous','CA',this)">
+          <span class="mono">CA</span><span class="nm">Clinique Al Andalous</span><span class="check" style="visibility:hidden">✓</span>
+        </button>
+        <button class="orgitem" onclick="switchOrg('Centre médical Ranya','CR',this)">
+          <span class="mono">CR</span><span class="nm">Centre médical Ranya</span><span class="check" style="visibility:hidden">✓</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- USER MENU -->
+    <div class="usr">
+      <button class="usr-btn" onclick="toggleUsr()">
+        <span class="av">YB</span>
+      </button>
+      <div class="usr-menu" id="usrMenu">
+        <div class="usr-head">
+          <div class="nm">Dr Youssef Bennani</div>
+          <div class="em">y.bennani@cabinet.ma</div>
+        </div>
+        <button class="usr-item">Mon profil</button>
+        <button class="usr-item">Réglages</button>
+        <button class="usr-item danger">Se déconnecter</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <h1 class="greet">Bonjour, Dr Bennani</h1>
+    <p class="greetsub">Vous travaillez dans <span class="org-echo" id="orgEcho">Cabinet El Amrani</span>.</p>
+    <div class="stub">Espace de travail — les modules (patients, médecins…) s'afficheront ici.</div>
+  </div>
+
+  <div class="pagenote">
+    <b>Maquette — changement d'organisation &amp; déconnexion (étape 1).</b> Le sélecteur en haut à gauche permet de basculer d'une organisation à l'autre sans se déconnecter (clique-le, puis choisis). La déconnexion est dans le menu utilisateur en haut à droite. Aucune vraie navigation ni bascule réelle.
+  </div>
+
+<script>
+  function toggleOrg(){
+    document.getElementById('orgMenu').classList.toggle('open');
+    document.getElementById('orgBtn').classList.toggle('open');
+    document.getElementById('usrMenu').classList.remove('open');
+  }
+  function toggleUsr(){
+    document.getElementById('usrMenu').classList.toggle('open');
+    document.getElementById('orgMenu').classList.remove('open');
+    document.getElementById('orgBtn').classList.remove('open');
+  }
+  function switchOrg(name,mono,el){
+    document.getElementById('curName').textContent=name;
+    document.getElementById('curMono').textContent=mono;
+    document.getElementById('orgEcho').textContent=name;
+    document.querySelectorAll('.orgitem').forEach(function(it){
+      it.classList.remove('active');
+      it.querySelector('.check').style.visibility='hidden';
+    });
+    el.classList.add('active');
+    el.querySelector('.check').style.visibility='visible';
+    toggleOrg();
+  }
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('.orgsw')) {document.getElementById('orgMenu').classList.remove('open');document.getElementById('orgBtn').classList.remove('open');}
+    if(!e.target.closest('.usr')) document.getElementById('usrMenu').classList.remove('open');
+  });
+</script>
+</body>
+</html>

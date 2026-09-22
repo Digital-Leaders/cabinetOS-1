@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CabinetOS — Connexion (maquette)</title>
+<style>
+  :root{
+    color-scheme:light;
+    --ink:#1A2B34; --teal:#0E6E78; --teald:#0A4C54; --grey:#566169;
+    --rule:#D8DFE2; --wash:#F2F6F7; --wash2:#E8F0F1; --white:#fff;
+    --err:#C0392B; --errbg:#FBEAE8; --errbd:#E4B5AF;
+    --shadow:0 1px 2px rgba(26,43,52,.04),0 10px 30px rgba(26,43,52,.08);
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;background:#F2F6F7 !important}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;
+    min-height:100vh;display:flex;flex-direction:column;
+    /* fond : dégradé teal très sobre, médical, calme */
+    background:
+      radial-gradient(1100px 600px at 50% -10%, #E8F0F1 0%, rgba(232,240,241,0) 60%),
+      var(--wash);
+  }
+
+  .shell{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 20px}
+  .card{
+    width:100%;max-width:380px;background:var(--white);border:1px solid var(--rule);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:34px 32px 30px;
+  }
+
+  /* marque */
+  .brand{display:flex;align-items:baseline;justify-content:center;gap:1px;margin-bottom:6px}
+  .brand .b1{font-size:26px;font-weight:700;letter-spacing:-.5px;color:var(--ink)}
+  .brand .b2{font-size:26px;font-weight:700;letter-spacing:-.5px;color:var(--teal)}
+  .tagline{text-align:center;color:var(--grey);font-size:13px;margin:0 0 28px}
+
+  label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;margin-top:16px}
+  label:first-of-type{margin-top:0}
+  input{
+    width:100%;font-size:15px;font-family:inherit;color:var(--ink);
+    padding:11px 13px;border:1px solid var(--rule);border-radius:9px;background:var(--white);
+    transition:border-color .12s,box-shadow .12s;
+  }
+  input::placeholder{color:#647079}
+  input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,110,120,.12)}
+  .field.error input{border-color:var(--err);box-shadow:0 0 0 3px rgba(192,57,43,.10)}
+
+  .pw-row{display:flex;align-items:baseline;justify-content:space-between}
+  .pw-row .forgot{font-size:12px;color:var(--teal);text-decoration:none;font-weight:600}
+  .pw-row .forgot:hover{color:var(--teald)}
+
+  .btn{
+    width:100%;margin-top:24px;font-family:inherit;font-size:15px;font-weight:600;
+    background:var(--teal);color:#fff;border:none;border-radius:9px;padding:12px;cursor:pointer;
+    transition:background .12s;
+  }
+  .btn:hover{background:var(--teald)}
+
+  .form-error{
+    display:none;align-items:flex-start;gap:8px;background:var(--errbg);border:1px solid var(--errbd);
+    color:#8E2A20;border-radius:9px;padding:10px 12px;font-size:13px;margin-bottom:20px;
+  }
+  .form-error.show{display:flex}
+
+  .foot{text-align:center;color:var(--grey);font-size:12px;margin-top:22px;padding-top:18px;border-top:1px solid var(--wash)}
+  .foot a{color:var(--teal);text-decoration:none;font-weight:600}
+
+  .pagenote{max-width:380px;margin:0 auto 30px;padding:0 20px;color:var(--grey);font-size:11.5px;text-align:center;line-height:1.5}
+  .pagenote b{color:var(--teald)}
+</style>
+</head>
+<body>
+
+  <div class="shell">
+    <div class="card">
+      <div class="brand"><span class="b1">Cabinet</span><span class="b2">OS</span></div>
+      <p class="tagline">L'espace de travail de votre cabinet</p>
+
+      <div class="form-error" id="formError">
+        <span>⚠</span>
+        <span>E-mail ou mot de passe incorrect. Réessayez.</span>
+      </div>
+
+      <div class="field" id="f-email">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" placeholder="vous@cabinet.ma" autocomplete="username" autofocus>
+      </div>
+
+      <div class="field" id="f-pw">
+        <div class="pw-row">
+          <label for="pw">Mot de passe</label>
+          <a class="forgot" href="#" onclick="return false">Mot de passe oublié ?</a>
+        </div>
+        <input type="password" id="pw" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <button class="btn" onclick="tryLogin()">Se connecter</button>
+
+      <div class="foot">
+        Pas encore de compte ? <a href="#" onclick="return false">Créer mon cabinet</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagenote">
+    <b>Maquette — écran de connexion (étape 1).</b> Saisie e-mail + mot de passe. « Mot de passe oublié » et « Créer mon cabinet » sont montrés comme repères mais mènent à des étapes reportées (réinitialisation, auto-inscription). Aucune vraie connexion.
+  </div>
+
+<script>
+  function tryLogin(){
+    // maquette : montre l'état d'erreur pour que tu voies le comportement,
+    // la vraie validation est côté serveur (Better-Auth).
+    const email=document.getElementById('email').value.trim();
+    const pw=document.getElementById('pw').value;
+    const box=document.getElementById('formError');
+    const fe=document.getElementById('f-email'), fp=document.getElementById('f-pw');
+    fe.classList.toggle('error', email==='');
+    fp.classList.toggle('error', pw==='');
+    if(email==='' || pw===''){
+      box.classList.remove('show');
+      return;
+    }
+    // démonstration : tout couple non vide "échoue" pour montrer le message d'erreur
+    box.classList.add('show');
+  }
+</script>
+</body>
+</html>
