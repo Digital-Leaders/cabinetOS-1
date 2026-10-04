@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CabinetOS — Admin : demandes d'inscription (maquette)</title>
+<style>
+  :root{
+    color-scheme:light;
+    --ink:#1A2B34; --teal:#0E6E78; --teald:#0A4C54; --grey:#566169; --hint:#647079;
+    --rule:#D8DFE2; --wash:#F2F6F7; --wash2:#E8F0F1; --white:#fff;
+    --amber:#B26B00; --amberbg:#FBF3E4; --amberbd:#E8D4A8;
+    --green:#1E7A46; --greenbg:#E7F3EC;
+    --red:#B3352B; --redbg:#FBEAE8; --redbd:#E4B5AF;
+    --shadow:0 1px 2px rgba(26,43,52,.04),0 8px 24px rgba(26,43,52,.08);
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#F2F6F7 !important}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;background:#F2F6F7;min-height:100vh}
+
+  .topbar{background:var(--white);border-bottom:1px solid var(--rule);height:56px;display:flex;align-items:center;gap:12px;padding:0 20px}
+  .brand{display:flex;align-items:baseline;gap:1px}
+  .brand .b1{font-size:15px;font-weight:700;color:var(--ink)}
+  .brand .b2{font-size:15px;font-weight:700;color:var(--teal)}
+  .adminbadge{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--teald);background:var(--wash2);border:1px solid var(--rule);border-radius:20px;padding:3px 9px}
+
+  .wrap{max-width:840px;margin:26px auto;padding:0 20px}
+  h1{font-size:21px;font-weight:700;letter-spacing:-.2px;margin:0 0 16px}
+
+  /* filtres + recherche */
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .filters{display:flex;gap:6px}
+  .chip{font-size:13px;font-weight:600;color:var(--grey);background:var(--white);border:1px solid var(--rule);border-radius:20px;padding:6px 14px;cursor:pointer}
+  .chip.on{background:var(--teald);color:#fff;border-color:var(--teald)}
+  .chip .n{opacity:.7;margin-left:4px;font-weight:500}
+  .search{flex:1;min-width:180px;position:relative}
+  .search input{width:100%;font-size:13.5px;font-family:inherit;padding:8px 12px 8px 32px;border:1px solid var(--rule);border-radius:8px;background:var(--white)}
+  .search .ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--hint)}
+  .search input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,110,120,.10)}
+
+  /* liste */
+  .list{background:var(--white);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .req{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--wash);cursor:pointer;transition:background .1s}
+  .req:last-child{border-bottom:none}
+  .req:hover{background:var(--wash)}
+  .req .av{width:40px;height:40px;border-radius:50%;background:var(--wash2);color:var(--teald);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none}
+  .req .info{flex:1;min-width:0}
+  .req .nm{font-size:14.5px;font-weight:600}
+  .req .meta{font-size:12.5px;color:var(--grey);margin-top:2px}
+  .req .right{text-align:right;flex:none}
+  .badge{font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:3px 8px;border-radius:20px;white-space:nowrap}
+  .badge.verif{background:var(--wash2);color:var(--teald)}
+  .badge.compl{background:var(--amberbg);color:var(--amber)}
+  .badge.ok{background:var(--greenbg);color:var(--green)}
+  .badge.no{background:var(--redbg);color:var(--red)}
+  .req .date{font-size:11.5px;color:var(--hint);margin-top:5px}
+
+  /* détail */
+  .backlink{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--teal);font-weight:600;cursor:pointer;margin-bottom:14px;text-decoration:none}
+  .dhead{background:var(--white);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;margin-bottom:16px}
+  .dhead .nm{font-size:19px;font-weight:700}
+  .dhead .sp{color:var(--grey);font-size:14px;margin-top:2px}
+  .dhead .st{margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .dhead .recu{font-size:12.5px;color:var(--hint)}
+
+  .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media(max-width:640px){.dgrid{grid-template-columns:1fr}}
+  .dcard{background:var(--white);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
+  .dcard h2{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--teald);margin:0 0 12px}
+  .kv{display:flex;padding:6px 0;font-size:13.5px;border-bottom:1px solid var(--wash)}
+  .kv:last-child{border-bottom:none}
+  .kv .k{width:96px;flex:none;color:var(--grey)}
+  .kv .v{color:var(--ink);font-weight:500;word-break:break-word}
+  .kv .v.empty{color:var(--hint);font-style:italic;font-weight:400}
+
+  .shortcuts{background:var(--white);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:16px}
+  .shortcuts h2{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--teald);margin:0 0 6px}
+  .shortcuts .note{font-size:12px;color:var(--hint);margin:0 0 12px;line-height:1.5}
+  .sclinks{display:flex;gap:10px;flex-wrap:wrap}
+  .sclinks a{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--teald);text-decoration:none;background:var(--wash);border:1px solid var(--rule);border-radius:8px;padding:9px 14px}
+  .sclinks a:hover{border-color:var(--teal);background:var(--wash2)}
+
+  .notebox{background:var(--white);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:16px}
+  .notebox h2{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--teald);margin:0 0 4px}
+  .notebox .sub{font-size:12px;color:var(--hint);margin:0 0 10px}
+  .notebox textarea{width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);border:1px solid var(--rule);border-radius:8px;padding:10px 12px;min-height:64px;resize:vertical}
+  .notebox textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,110,120,.10)}
+
+  .timeline{background:var(--white);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:16px}
+  .timeline h2{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--teald);margin:0 0 12px}
+  .tl-item{display:flex;gap:11px;font-size:13px;padding:4px 0}
+  .tl-item .d{color:var(--hint);flex:none;width:44px;font-variant-numeric:tabular-nums}
+  .tl-item .e{color:var(--ink)}
+  .tl-item .e b{font-weight:600}
+
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{font-family:inherit;font-size:14px;font-weight:600;border-radius:9px;padding:11px 18px;cursor:pointer;border:1px solid transparent;transition:.12s}
+  .btn-ok{background:var(--teal);color:#fff;flex:1;min-width:140px}
+  .btn-ok:hover{background:var(--teald)}
+  .btn-compl{background:none;color:var(--amber);border-color:var(--amberbd)}
+  .btn-compl:hover{background:var(--amberbg)}
+  .btn-no{background:none;color:var(--red);border-color:var(--redbd)}
+  .btn-no:hover{background:var(--redbg)}
+
+  .pagenote{max-width:840px;margin:22px auto 30px;padding:0 20px;color:var(--grey);font-size:11.5px;line-height:1.5}
+
+  /* ===== modales ===== */
+  .overlay{position:fixed;inset:0;background:rgba(26,43,52,.42);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+  .overlay.open{display:flex}
+  .modal{width:100%;max-width:440px;background:var(--white);border-radius:14px;box-shadow:0 20px 60px rgba(26,43,52,.28);padding:24px 24px 20px;max-height:90vh;overflow-y:auto}
+  .modal h3{font-size:17px;font-weight:700;margin:0 0 6px}
+  .modal .msub{font-size:13px;color:var(--grey);margin:0 0 18px;line-height:1.5}
+  .modal label{display:block;font-size:12.5px;font-weight:600;color:var(--ink);margin:14px 0 6px}
+  .modal textarea,.modal input[type=text]{width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);border:1px solid var(--rule);border-radius:8px;padding:9px 11px;resize:vertical}
+  .modal textarea:focus,.modal input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,110,120,.10)}
+  .radio{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border:1px solid var(--rule);border-radius:8px;margin-bottom:8px;cursor:pointer;font-size:13.5px}
+  .radio:hover{background:var(--wash)}
+  .radio input{margin:2px 0 0;accent-color:var(--teal)}
+  .warnlabel{color:var(--red);font-weight:700}
+  .intbox{background:var(--redbg);border:1px solid var(--redbd);border-radius:8px;padding:11px 12px;margin-top:6px}
+  .intbox .tag{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--red);margin-bottom:6px}
+  .intbox textarea{border-color:var(--redbd);background:var(--white)}
+  .cascade{background:var(--wash2);border-radius:8px;padding:12px 14px;margin:6px 0 4px;font-size:12.5px;color:var(--teald);line-height:1.6}
+  .cascade b{font-weight:700}
+  .cascade ul{margin:6px 0 0;padding-left:18px}
+  .cascade li{margin-bottom:2px}
+  .modal-actions{display:flex;gap:10px;margin-top:20px}
+  .modal-actions .btn{flex:1}
+  .btn-cancel{background:none;color:var(--grey);border-color:var(--rule)}
+  .btn-cancel:hover{background:var(--wash);color:var(--ink)}
+
+  .pagenote b{color:var(--teald)}
+
+  @media(max-width:480px){
+    .actions{flex-direction:column}
+    .btn{width:100%}
+    .req .meta{font-size:12px}
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="b1">Cabinet</span><span class="b2">OS</span></div>
+    <span class="adminbadge">Administration</span>
+  </div>
+
+  <div class="wrap">
+    <!-- ========== ÉCRAN 1 : LISTE ========== -->
+    <div id="screen-list">
+      <h1>Demandes d'inscription</h1>
+      <div class="toolbar">
+        <div class="filters">
+          <button class="chip on">À traiter <span class="n">3</span></button>
+          <button class="chip">Validées</button>
+          <button class="chip">Refusées</button>
+        </div>
+        <div class="search"><span class="ic">⌕</span><input type="text" placeholder="Rechercher un nom, un cabinet…"></div>
+      </div>
+
+      <div class="list">
+        <div class="req" onclick="openDetail()">
+          <div class="av">YB</div>
+          <div class="info">
+            <div class="nm">Dr Youssef Bennani</div>
+            <div class="meta">Cardiologie · Cabinet Dr Bennani · Casablanca</div>
+          </div>
+          <div class="right"><span class="badge verif">En vérification</span><div class="date">28/09/2026</div></div>
+        </div>
+        <div class="req" onclick="openDetail()">
+          <div class="av">ST</div>
+          <div class="info">
+            <div class="nm">Dr Salma Tazi</div>
+            <div class="meta">Pédiatrie · Centre médical Ranya · Rabat</div>
+          </div>
+          <div class="right"><span class="badge compl">Complément demandé</span><div class="date">27/09/2026</div></div>
+        </div>
+        <div class="req" onclick="openDetail()">
+          <div class="av">OF</div>
+          <div class="info">
+            <div class="nm">Dr Omar Fikri</div>
+            <div class="meta">Dermatologie · Clinique Al Andalous · Marrakech</div>
+          </div>
+          <div class="right"><span class="badge verif">En vérification</span><div class="date">28/09/2026</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== ÉCRAN 2 : DÉTAIL ========== -->
+    <div id="screen-detail" style="display:none">
+      <a class="backlink" onclick="closeDetail()">‹ Retour aux demandes</a>
+
+      <div class="dhead">
+        <div class="nm">Dr Youssef Bennani</div>
+        <div class="sp">Cardiologie</div>
+        <div class="st">
+          <span class="badge verif">En vérification</span>
+          <span class="recu">Demande reçue le 28/09/2026</span>
+        </div>
+      </div>
+
+      <div class="dgrid">
+        <div class="dcard">
+          <h2>Médecin</h2>
+          <div class="kv"><div class="k">Prénom</div><div class="v">Youssef</div></div>
+          <div class="kv"><div class="k">Nom</div><div class="v">Bennani</div></div>
+          <div class="kv"><div class="k">Email</div><div class="v">y.bennani@cabinet.ma</div></div>
+          <div class="kv"><div class="k">Spécialité</div><div class="v">Cardiologie</div></div>
+          <div class="kv"><div class="k">INPE</div><div class="v">123456789</div></div>
+          <div class="kv"><div class="k">N° d'Ordre</div><div class="v empty">non renseigné</div></div>
+        </div>
+        <div class="dcard">
+          <h2>Structure d'exercice</h2>
+          <div class="kv"><div class="k">Cabinet</div><div class="v">Cabinet Dr Bennani</div></div>
+          <div class="kv"><div class="k">Ville</div><div class="v">Casablanca</div></div>
+          <div class="kv"><div class="k">Adresse</div><div class="v">Rue Ibn Sina, Maârif</div></div>
+        </div>
+      </div>
+
+      <div class="shortcuts">
+        <h2>Vérifier</h2>
+        <p class="note">Raccourcis vers des recherches préparées. CabinetOS ne conclut jamais automatiquement : c'est vous qui appréciez la concordance des informations.</p>
+        <div class="sclinks">
+          <a href="https://www.google.com/search?q=Dr+Youssef+Bennani+cardiologie+Casablanca" target="_blank" rel="noopener">🔎 Rechercher sur Google</a>
+          <a href="https://www.google.com/maps/search/Cabinet+Dr+Bennani+Casablanca" target="_blank" rel="noopener">📍 Google Maps</a>
+          <a href="#" onclick="return false">📖 Annuaire médical</a>
+        </div>
+      </div>
+
+      <div class="notebox">
+        <h2>Note interne de vérification</h2>
+        <div class="sub">Facultative — visible uniquement par l'équipe, jamais communiquée au médecin.</div>
+        <textarea placeholder="Ex. Cabinet retrouvé sur Google, nom et adresse concordants."></textarea>
+      </div>
+
+      <div class="timeline">
+        <h2>Historique</h2>
+        <div class="tl-item"><span class="d">28/09</span><span class="e">Demande reçue</span></div>
+        <div class="tl-item"><span class="d">28/09</span><span class="e">Email de confirmation envoyé au demandeur</span></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-ok" onclick="openM('mValid')">Valider</button>
+        <button class="btn btn-compl" onclick="openM('mCompl')">Demander un complément</button>
+        <button class="btn btn-no" onclick="openM('mRefus')">Refuser</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODALE : confirmer la validation -->
+  <div class="overlay" id="mValid">
+    <div class="modal">
+      <h3>Confirmer la validation</h3>
+      <p class="msub">La validation de la demande de <b>Dr Youssef Bennani</b> déclenche, ensemble :</p>
+      <div class="cascade">
+        <b>À la validation :</b>
+        <ul>
+          <li>activation du compte</li>
+          <li>création de son organisation</li>
+          <li>rattachement du fondateur comme premier membre</li>
+          <li>création de sa fiche médecin (pré-remplie)</li>
+        </ul>
+        <div style="margin-top:8px"><b>Puis</b>, séparément : envoi de l'email d'activation. Si l'email échoue, la validation reste acquise et l'envoi pourra être relancé.</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeM()">Annuler</button>
+        <button class="btn btn-ok" onclick="closeM()">Confirmer la validation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE : demander un complément -->
+  <div class="overlay" id="mCompl">
+    <div class="modal">
+      <h3>Demander un complément</h3>
+      <p class="msub">Un email sera envoyé au médecin. Il pourra y répondre directement (lui ou son secrétariat).</p>
+      <label>Information demandée</label>
+      <label class="radio"><input type="radio" name="ct" checked><span>Lien vers la fiche Google de l'établissement</span></label>
+      <label class="radio"><input type="radio" name="ct"><span>Lien vers une autre présence professionnelle publique</span></label>
+      <label class="radio"><input type="radio" name="ct"><span>Autre information — à préciser</span></label>
+      <label>Message au médecin <span style="color:var(--hint);font-weight:500">— pré-rempli, modifiable</span></label>
+      <textarea style="min-height:88px">Bonjour, afin de finaliser la vérification de votre inscription, merci de nous transmettre le lien vers la fiche Google de votre cabinet ou toute page publique permettant d'identifier votre activité. Vous pouvez répondre directement à cet email.</textarea>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeM()">Annuler</button>
+        <button class="btn btn-compl" onclick="closeM()">Envoyer la demande</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE : refuser -->
+  <div class="overlay" id="mRefus">
+    <div class="modal">
+      <h3>Refuser la demande</h3>
+      <p class="msub">Deux champs distincts, pour ne jamais envoyer par accident une note interne au médecin.</p>
+
+      <div class="intbox">
+        <div class="tag">Motif interne — non communiqué au demandeur · obligatoire</div>
+        <textarea placeholder="Ex. INPE introuvable, aucune concordance sur les sources publiques."></textarea>
+      </div>
+
+      <label style="margin-top:16px">Message communiqué au demandeur <span style="color:var(--hint);font-weight:500">— pré-rempli, modifiable</span></label>
+      <textarea style="min-height:76px">Bonjour, nous n'avons pas pu valider votre inscription avec les informations disponibles. Pour toute question, vous pouvez nous contacter.</textarea>
+
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeM()">Annuler</button>
+        <button class="btn btn-no" onclick="closeM()">Refuser la demande</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagenote">
+    <b>Maquette — espace admin de validation (étape 2).</b> Deux écrans : liste (filtres À traiter / Validées / Refusées + recherche) → détail. Les infos du médecin sont en lecture seule (on examine sa déclaration, on ne la réécrit pas). Raccourcis de recherche pré-remplis (Google est un vrai lien cliquable). Note interne facultative, jamais de checklist/score. Historique léger. Trois actions. Les trois actions ouvrent une fenêtre : « Valider » confirme et rappelle la cascade (compte + organisation + membership + fiche médecin, puis email séparé et rejouable) ; « Complément » choisit l'info demandée + message modifiable ; « Refuser » sépare motif interne (jamais envoyé) et message au demandeur. Aucune donnée réelle.
+  </div>
+
+<script>
+  function openDetail(){document.getElementById('screen-list').style.display='none';document.getElementById('screen-detail').style.display='block';window.scrollTo(0,0);}
+  function closeDetail(){document.getElementById('screen-detail').style.display='none';document.getElementById('screen-list').style.display='block';window.scrollTo(0,0);}
+  function openM(id){document.getElementById(id).classList.add('open');}
+  function closeM(){document.querySelectorAll('.overlay').forEach(function(o){o.classList.remove('open');});}
+  document.addEventListener('click',function(e){if(e.target.classList&&e.target.classList.contains('overlay'))closeM();});
+</script>
+</body>
+</html>
