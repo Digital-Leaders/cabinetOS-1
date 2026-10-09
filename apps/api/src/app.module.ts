@@ -7,6 +7,7 @@ import { AuditModule } from './modules/audit';
 import { NotificationsModule } from './modules/notifications';
 import { SettingsModule } from './modules/settings';
 import { StorageModule } from './modules/storage';
+import { EmailModule } from './modules/email';
 import { PatientModule } from './business/patient';
 import { MedecinModule } from './business/medecin';
 
@@ -20,6 +21,7 @@ import { MedecinModule } from './business/medecin';
     NotificationsModule,
     SettingsModule,
     StorageModule,
+    EmailModule,
     PatientModule,
     MedecinModule,
   ],
