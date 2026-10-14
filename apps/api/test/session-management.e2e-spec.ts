@@ -8,6 +8,7 @@ import { auth, authPool } from '../src/modules/identity/infrastructure/auth';
 import { AUTH_PROVIDER } from '../src/modules/identity/application/auth-provider.port';
 import type { AuthProvider } from '../src/modules/identity/application/auth-provider.port';
 import { DatabaseService } from '../src/modules/shared/database/database.service';
+import { createTestAccount } from './fixtures/test-accounts';
 
 // TASK-015 : gestion des sessions -- renouvellement automatique et revocation explicite.
 //
@@ -54,12 +55,11 @@ describe('Gestion des sessions (e2e, TASK-015)', () => {
   });
 
   it('le renouvellement automatique prolonge une session ancienne sans reconnexion complete', async () => {
-    const signUpRes = await fetch(`${httpServer}/api/v1/auth/sign-up/email`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Origin: origin },
-      body: JSON.stringify({ email: testEmail, password: testPassword, name: 'Session Mgmt Test' }),
+    const { cookie } = await createTestAccount({
+      email: testEmail,
+      password: testPassword,
+      name: 'Session Mgmt Test',
     });
-    const cookie = (signUpRes.headers.get('set-cookie') as string).split(';')[0];
 
     await databaseService.db.execute(
       sql`UPDATE sessions SET updated_at = NOW() - INTERVAL '2 days', expires_at = NOW() + INTERVAL '1 hour' WHERE user_id = (SELECT id FROM users WHERE email = ${testEmail})`,

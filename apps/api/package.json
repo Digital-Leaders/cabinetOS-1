@@ -9,7 +9,8 @@
     "db:generate": "drizzle-kit generate",
     "db:check": "drizzle-kit check",
     "build": "tsc --noEmit",
-    "test:isolation": "jest --config jest.isolation.config.cjs --runInBand"
+    "test:isolation": "jest --config jest.isolation.config.cjs --runInBand",
+    "account:create": "node -r ts-node/register -r reflect-metadata scripts/create-team-account.ts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.25",
