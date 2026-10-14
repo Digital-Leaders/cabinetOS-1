@@ -75,6 +75,7 @@ jobs:
           PGPASSWORD=postgres psql -h localhost -U postgres -d cabinetos_test -f db/migrations/0015_*.sql
           PGPASSWORD=postgres psql -h localhost -U postgres -d cabinetos_test -f db/migrations/0016_*.sql
           PGPASSWORD=postgres psql -h localhost -U postgres -d cabinetos_test -f db/migrations/0017_*.sql
+          PGPASSWORD=postgres psql -h localhost -U postgres -d cabinetos_test -f db/migrations/0018_*.sql
           PGPASSWORD=postgres psql -h localhost -U postgres -d cabinetos_test -c "
             CREATE ROLE cabinetos_app LOGIN PASSWORD 'cabinetos_app_pw' NOSUPERUSER NOBYPASSRLS;
             GRANT CONNECT ON DATABASE cabinetos_test TO cabinetos_app;
@@ -85,6 +86,7 @@ jobs:
             ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO cabinetos_app;
           "
           PGPASSWORD=postgres psql -h localhost -U postgres -d cabinetos_test -f db/migrations/0003_*.sql
+          PGPASSWORD=postgres psql -h localhost -U postgres -d cabinetos_test -f db/migrations/0019_*.sql
 
       - name: Test
         run: pnpm run test
