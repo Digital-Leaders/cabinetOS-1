@@ -1,6 +1,6 @@
 # ADR-0020 — Infrastructure d'email transactionnel : port, adaptateurs, envoi découplé
 
-**Statut** : Proposé (EA-013, BUILD-004 étape 2 — à valider par l'encadrant)
+**Statut** : Accepté (EA-013, BUILD-004 étape 2 — validé par l'encadrant après revue du code de la PR #57)
 
 ## Contexte
 
