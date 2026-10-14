@@ -13,8 +13,11 @@ const SESSION_COOKIE = 'better-auth.session_token';
 // organizationId. La vraie verification (session valide + permission dans
 // l organisation) reste entierement cote API (PermissionsGuard, deja en place).
 
-function isLoginPath(pathname: string): boolean {
-  return pathname.endsWith('/login');
+// Pages publiques du parcours d'acces : la connexion (etape 1) et l'inscription du
+// fondateur (etape 2, TASK-053) -- toutes deux accessibles sans session, et sans objet
+// pour quelqu'un qui en a deja une (renvoye a l'accueil).
+function isPublicAuthPath(pathname: string): boolean {
+  return pathname.endsWith('/login') || pathname.endsWith('/register');
 }
 
 export default async function middleware(request: NextRequest) {
@@ -29,7 +32,7 @@ export default async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const hasSession = request.cookies.has(SESSION_COOKIE);
-  const onLoginPage = isLoginPath(pathname);
+  const onLoginPage = isPublicAuthPath(pathname);
   const locale = pathname.split('/')[1] || routing.defaultLocale;
 
   if (!hasSession && !onLoginPage) {

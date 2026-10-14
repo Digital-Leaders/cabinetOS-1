@@ -20,9 +20,10 @@ import './login-form.css';
 // cookie pose ici, choose-organization-view.tsx s en charge apres selection).
 //
 // "Mot de passe oublie" et "Creer mon cabinet" sont des reperes gardes visibles
-// (decision Product Owner) mais menent a des etapes reportees (reinitialisation,
-// auto-inscription) : un clic affiche un message "bientot disponible" plutot
-// qu une page morte ou une navigation vers nulle part.
+// (decision Product Owner). "Mot de passe oublie" mene encore a une etape reportee
+// (reinitialisation) : un clic affiche un message "bientot disponible". "Creer mon
+// cabinet" s'active avec l'etape 2 (TASK-053) et ouvre l'inscription du fondateur --
+// sans changer l'ecran, comme prevu par la spec de l'etape 1.
 
 export function LoginForm({ locale }: { locale: string }) {
   const t = useTranslations('Login');
@@ -146,7 +147,7 @@ export function LoginForm({ locale }: { locale: string }) {
           <button
             type="button"
             className="lf-link"
-            onClick={() => showComingSoon(t('comingSoon.createCabinet'))}
+            onClick={() => router.push(`/${locale}/register`)}
           >
             {t('createCabinet')}
           </button>
