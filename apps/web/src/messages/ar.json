@@ -15,8 +15,7 @@
     "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة. أعد المحاولة.",
     "unexpectedError": "حدث خطأ غير متوقع. أعد المحاولة.",
     "comingSoon": {
-      "resetPassword": "إعادة تعيين كلمة المرور قريبًا. في غضون ذلك، تواصل مع المسؤول لديك.",
-      "createCabinet": "إنشاء الحساب قريبًا. في غضون ذلك، تواصل مع المسؤول للحصول على وصول."
+      "resetPassword": "إعادة تعيين كلمة المرور قريبًا. في غضون ذلك، تواصل مع المسؤول لديك."
     },
     "noOrganization": "لا توجد أي مؤسسة مرتبطة بهذا الحساب. تواصل مع المسؤول لديك."
   },
@@ -237,6 +236,105 @@
       "name": "الاسم",
       "phone": "الهاتف",
       "cin": "البطاقة الوطنية"
+    }
+  },
+  "Registration": {
+    "title": "إنشاء مساحتك",
+    "subtitle": "بعض المعلومات تكفي للبدء.",
+    "blocks": {
+      "you": "أنت",
+      "activity": "نشاطك المهني",
+      "cabinet": "عيادتك / مؤسستك"
+    },
+    "labels": {
+      "firstName": "الاسم الشخصي",
+      "lastName": "الاسم العائلي",
+      "email": "البريد الإلكتروني المهني",
+      "password": "كلمة المرور",
+      "specialty": "التخصص",
+      "inpe": "INPE",
+      "numeroOrdre": "رقم الهيئة",
+      "structureName": "اسم العيادة أو مؤسسة الممارسة",
+      "city": "المدينة",
+      "address": "العنوان المهني"
+    },
+    "placeholders": {
+      "firstName": "يوسف",
+      "lastName": "بناني",
+      "email": "vous@cabinet.ma",
+      "inpe": "9 أرقام",
+      "structureName": "مثال: عيادة الدكتور بناني، مصحة، مركز طبي…",
+      "address": "الشارع، الحي"
+    },
+    "optional": "اختياري",
+    "selectPlaceholder": "اختر…",
+    "hints": {
+      "identifiers": "هذه المعلومات، عند توفرها، تسهّل التحقق من نشاطك المهني."
+    },
+    "reassure": "تتيح لنا هذه المعلومات التحقق من نشاطك المهني وتأمين إنشاء مساحتك.",
+    "submit": "إنشاء مساحتي",
+    "submitting": "جارٍ الإنشاء…",
+    "haveAccount": "لديك مساحة بالفعل؟",
+    "signIn": "تسجيل الدخول",
+    "errors": {
+      "required": "هذا الحقل ضروري.",
+      "emailInvalid": "تحقق من عنوان البريد الإلكتروني.",
+      "passwordTooShort": "8 أحرف على الأقل.",
+      "checkFields": "تحقق من الحقول المشار إليها أدناه.",
+      "emailAlreadyUsed": "توجد مساحة بالفعل بهذا البريد الإلكتروني. سجّل الدخول، أو تواصل معنا عند الحاجة.",
+      "emailAlreadyUsedField": "هذا البريد الإلكتروني مستعمل بالفعل.",
+      "unexpected": "تعذّر إرسال طلبك. أعد المحاولة بعد لحظات."
+    },
+    "done": {
+      "title": "تم استلام طلبك",
+      "body": "سيتحقق فريقنا من المعلومات المقدمة. لا شيء مطلوب منك في الوقت الحالي.",
+      "email": "تم إرسال بريد إلكتروني للتأكيد إليك."
+    },
+    "specialties": {
+      "generaliste": "طبيب عام",
+      "cardiologie": "أمراض القلب والشرايين",
+      "dermatologie": "الأمراض الجلدية",
+      "endocrinologie_maladies_metaboliques": "الغدد الصماء وأمراض الأيض",
+      "gastro_enterologie": "أمراض الجهاز الهضمي",
+      "gynecologie_obstetrique": "أمراض النساء والتوليد",
+      "pediatrie": "طب الأطفال",
+      "pneumologie": "أمراض الرئة والجهاز التنفسي",
+      "neurologie": "طب الأعصاب",
+      "psychiatrie": "الطب النفسي",
+      "rhumatologie": "أمراض الروماتيزم",
+      "nephrologie": "أمراض الكلى",
+      "urologie": "جراحة المسالك البولية",
+      "ophtalmologie": "طب العيون",
+      "orl": "طب الأنف والأذن والحنجرة",
+      "chirurgie_generale": "الجراحة العامة",
+      "chirurgie_orthopedique_traumatologie": "جراحة العظام والمفاصل والرضوض",
+      "neurochirurgie": "جراحة الأعصاب",
+      "chirurgie_cardiovasculaire_vasculaire": "جراحة القلب والأوعية الدموية",
+      "chirurgie_plastique_reconstructrice_esthetique": "الجراحة التجميلية والترميمية",
+      "chirurgie_pediatrique": "جراحة الأطفال",
+      "anesthesie_reanimation": "التخدير والإنعاش",
+      "oncologie_medicale": "طب الأورام",
+      "radiotherapie_oncologie_radiotherapique": "العلاج بالأشعة",
+      "hematologie": "أمراض الدم",
+      "medecine_interne": "الطب الباطني",
+      "maladies_infectieuses": "الأمراض المعدية",
+      "medecine_physique_readaptation": "الطب الفيزيائي وإعادة التأهيل",
+      "medecine_travail": "طب الشغل",
+      "medecine_legale": "الطب الشرعي",
+      "radiologie_imagerie_medicale": "الأشعة والتصوير الطبي",
+      "anatomie_pathologique": "التشريح المرضي",
+      "biologie_medicale": "البيولوجيا الطبية",
+      "medecine_nucleaire": "الطب النووي",
+      "geriatrie": "طب الشيخوخة",
+      "medecine_urgence": "طب المستعجلات"
+    },
+    "cities": {
+      "Casablanca": "الدار البيضاء",
+      "Rabat": "الرباط",
+      "Marrakech": "مراكش",
+      "Fès": "فاس",
+      "Tanger": "طنجة",
+      "Agadir": "أكادير"
     }
   }
 }

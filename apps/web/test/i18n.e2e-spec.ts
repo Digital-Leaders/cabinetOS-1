@@ -58,4 +58,32 @@ describe('i18n locales (e2e)', () => {
     expect(html).toContain('dir="rtl"');
     expect(html).toContain('class="lf-shell"');
   });
+
+  // BUILD-004 etape 2, TASK-053 : l'inscription est publique (proxy.ts), dans les deux
+  // langues, avec le bon sens de lecture.
+  it('affiche l ecran d inscription en francais, sans session, avec dir="ltr"', async () => {
+    const res = await fetch(`${BASE_URL}/fr/register`, { redirect: 'manual' });
+    const html = await res.text();
+
+    expect(res.status).toBe(200);
+    expect(html).toContain('dir="ltr"');
+    expect(html).toContain('class="rf-shell"');
+  });
+
+  it('affiche l ecran d inscription en arabe, sans session, avec dir="rtl"', async () => {
+    const res = await fetch(`${BASE_URL}/ar/register`, { redirect: 'manual' });
+    const html = await res.text();
+
+    expect(res.status).toBe(200);
+    expect(html).toContain('dir="rtl"');
+    expect(html).toContain('class="rf-shell"');
+  });
+
+  it('une page protegee reste protegee : sans session, renvoi vers la connexion', async () => {
+    const res = await fetch(`${BASE_URL}/fr/patients`, { redirect: 'manual' });
+
+    expect(res.status).toBeGreaterThanOrEqual(300);
+    expect(res.status).toBeLessThan(400);
+    expect(res.headers.get('location')).toContain('/fr/login');
+  });
 });

@@ -15,8 +15,7 @@
     "invalidCredentials": "E-mail ou mot de passe incorrect. Réessayez.",
     "unexpectedError": "Une erreur inattendue est survenue. Réessayez.",
     "comingSoon": {
-      "resetPassword": "La réinitialisation de mot de passe arrive bientôt. En attendant, contactez votre administrateur.",
-      "createCabinet": "La création de compte arrive bientôt. En attendant, contactez votre administrateur pour obtenir un accès."
+      "resetPassword": "La réinitialisation de mot de passe arrive bientôt. En attendant, contactez votre administrateur."
     },
     "noOrganization": "Aucune organisation associée à ce compte. Contactez votre administrateur."
   },
@@ -237,6 +236,105 @@
       "name": "nom",
       "phone": "téléphone",
       "cin": "CIN"
+    }
+  },
+  "Registration": {
+    "title": "Créer votre espace",
+    "subtitle": "Quelques informations suffisent pour commencer.",
+    "blocks": {
+      "you": "Vous",
+      "activity": "Votre activité professionnelle",
+      "cabinet": "Votre cabinet / structure"
+    },
+    "labels": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email professionnel",
+      "password": "Mot de passe",
+      "specialty": "Spécialité",
+      "inpe": "INPE",
+      "numeroOrdre": "N° d'Ordre",
+      "structureName": "Nom du cabinet ou de la structure d'exercice",
+      "city": "Ville",
+      "address": "Adresse professionnelle"
+    },
+    "placeholders": {
+      "firstName": "Youssef",
+      "lastName": "Bennani",
+      "email": "vous@cabinet.ma",
+      "inpe": "9 chiffres",
+      "structureName": "Ex. Cabinet Dr Bennani, clinique, centre médical…",
+      "address": "Rue, quartier"
+    },
+    "optional": "facultatif",
+    "selectPlaceholder": "Sélectionnez…",
+    "hints": {
+      "identifiers": "Ces informations, lorsqu'elles sont disponibles, facilitent la vérification de votre activité professionnelle."
+    },
+    "reassure": "Ces informations nous permettent de vérifier votre activité professionnelle et de sécuriser la création de votre espace.",
+    "submit": "Créer mon espace",
+    "submitting": "Création…",
+    "haveAccount": "Vous avez déjà un espace ?",
+    "signIn": "Se connecter",
+    "errors": {
+      "required": "Ce champ est nécessaire.",
+      "emailInvalid": "Vérifiez l'adresse email.",
+      "passwordTooShort": "8 caractères minimum.",
+      "checkFields": "Vérifiez les champs signalés ci-dessous.",
+      "emailAlreadyUsed": "Un espace existe déjà avec cet email. Connectez-vous, ou contactez-nous si besoin.",
+      "emailAlreadyUsedField": "Cet email est déjà utilisé.",
+      "unexpected": "Votre demande n'a pas pu être envoyée. Réessayez dans quelques instants."
+    },
+    "done": {
+      "title": "Votre demande est bien reçue",
+      "body": "Notre équipe va vérifier les informations renseignées. Vous n'avez rien à faire pour le moment.",
+      "email": "Un email de confirmation vous a été envoyé."
+    },
+    "specialties": {
+      "generaliste": "Médecin généraliste",
+      "cardiologie": "Cardiologie",
+      "dermatologie": "Dermatologie",
+      "endocrinologie_maladies_metaboliques": "Endocrinologie et maladies métaboliques",
+      "gastro_enterologie": "Gastro-entérologie",
+      "gynecologie_obstetrique": "Gynécologie-obstétrique",
+      "pediatrie": "Pédiatrie",
+      "pneumologie": "Pneumologie",
+      "neurologie": "Neurologie",
+      "psychiatrie": "Psychiatrie",
+      "rhumatologie": "Rhumatologie",
+      "nephrologie": "Néphrologie",
+      "urologie": "Urologie",
+      "ophtalmologie": "Ophtalmologie",
+      "orl": "Oto-rhino-laryngologie (ORL)",
+      "chirurgie_generale": "Chirurgie générale",
+      "chirurgie_orthopedique_traumatologie": "Chirurgie orthopédique et traumatologie",
+      "neurochirurgie": "Neurochirurgie",
+      "chirurgie_cardiovasculaire_vasculaire": "Chirurgie cardiovasculaire / vasculaire",
+      "chirurgie_plastique_reconstructrice_esthetique": "Chirurgie plastique, reconstructrice et esthétique",
+      "chirurgie_pediatrique": "Chirurgie pédiatrique",
+      "anesthesie_reanimation": "Anesthésie-réanimation",
+      "oncologie_medicale": "Oncologie médicale",
+      "radiotherapie_oncologie_radiotherapique": "Radiothérapie / oncologie radiothérapique",
+      "hematologie": "Hématologie",
+      "medecine_interne": "Médecine interne",
+      "maladies_infectieuses": "Maladies infectieuses",
+      "medecine_physique_readaptation": "Médecine physique et de réadaptation",
+      "medecine_travail": "Médecine du travail",
+      "medecine_legale": "Médecine légale",
+      "radiologie_imagerie_medicale": "Radiologie / imagerie médicale",
+      "anatomie_pathologique": "Anatomie pathologique",
+      "biologie_medicale": "Biologie médicale",
+      "medecine_nucleaire": "Médecine nucléaire",
+      "geriatrie": "Gériatrie",
+      "medecine_urgence": "Médecine d'urgence"
+    },
+    "cities": {
+      "Casablanca": "Casablanca",
+      "Rabat": "Rabat",
+      "Marrakech": "Marrakech",
+      "Fès": "Fès",
+      "Tanger": "Tanger",
+      "Agadir": "Agadir"
     }
   }
 }

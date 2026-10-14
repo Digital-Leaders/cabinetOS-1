@@ -1,0 +1,267 @@
+/*
+ * Ecran d'inscription du fondateur -- port fidele de la maquette inscription.html
+ * (BUILD-004 etape 2, TASK-053). Memes couleurs que la maquette.
+ *
+ * Contraste AA (regle non negociable n°1) : les gris de texte sont ceux de la maquette
+ * (#566169 : 6,35 sur blanc ; #647079 : 5,08), pas le jeton global --grey (#6b7a82 :
+ * 4,44, sous le seuil de 4,5 -- signale a part, non modifie ici).
+ */
+
+.rf-shell {
+  --rf-grey: #566169;
+  --rf-hint: #647079;
+  --rf-err: #c0392b;
+  --rf-errbg: #fbeae8;
+  --rf-errbd: #e4b5af;
+  --rf-errtext: #8e2a20;
+  --rf-radius: 12px;
+  --rf-shadow: 0 1px 2px rgba(26, 43, 52, 0.04), 0 10px 30px rgba(26, 43, 52, 0.08);
+
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 34px 20px 60px;
+  background: var(--wash);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+.rf-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--rf-radius);
+  box-shadow: var(--rf-shadow);
+  padding: 32px 30px 28px;
+}
+
+.rf-brand {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1px;
+  margin-bottom: 6px;
+  direction: ltr;
+}
+.rf-brand .b1,
+.rf-brand .b2 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+.rf-brand .b1 {
+  color: var(--ink);
+}
+.rf-brand .b2 {
+  color: var(--teal);
+}
+
+.rf-card h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  margin: 14px 0 2px;
+  text-align: center;
+}
+.rf-sub {
+  color: var(--rf-grey);
+  font-size: 13.5px;
+  text-align: center;
+  margin: 0 0 22px;
+}
+
+.rf-block {
+  margin-bottom: 22px;
+}
+.rf-btitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--teald);
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rf-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+
+.rf-field {
+  margin-top: 14px;
+}
+.rf-block > .rf-field:first-of-type,
+.rf-row:first-of-type .rf-field,
+.rf-btitle + .rf-field {
+  margin-top: 0;
+}
+.rf-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.rf-opt {
+  color: var(--rf-grey);
+  font-weight: 500;
+  font-size: 12px;
+  margin-inline-start: 5px;
+}
+.rf-field input,
+.rf-field select {
+  width: 100%;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: var(--ink);
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  background: var(--white);
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+.rf-field input::placeholder {
+  color: var(--rf-hint);
+}
+.rf-field input:focus,
+.rf-field select:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(14, 110, 120, 0.12);
+}
+.rf-field.error input,
+.rf-field.error select {
+  border-color: var(--rf-err);
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+}
+.rf-field-error {
+  color: var(--rf-errtext);
+  font-size: 12px;
+  margin: 5px 0 0;
+}
+
+.rf-hint {
+  font-size: 12px;
+  color: var(--rf-hint);
+  margin: 5px 0 0;
+}
+
+.rf-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+.rf-btitle + .rf-row {
+  margin-top: 0;
+}
+.rf-row > * {
+  flex: 1;
+  min-width: 0;
+}
+.rf-row .rf-field {
+  margin-top: 0;
+}
+
+.rf-reassure {
+  font-size: 12.5px;
+  color: var(--rf-grey);
+  background: var(--wash);
+  border-radius: 9px;
+  padding: 11px 13px;
+  margin: 6px 0 18px;
+}
+
+.rf-form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: var(--rf-errbg);
+  border: 1px solid var(--rf-errbd);
+  color: var(--rf-errtext);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.rf-btn {
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  padding: 13px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.rf-btn:hover:not(:disabled) {
+  background: var(--teald);
+}
+.rf-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.rf-foot {
+  text-align: center;
+  color: var(--rf-grey);
+  font-size: 12.5px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--wash);
+}
+.rf-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--teal);
+  font-weight: 600;
+  cursor: pointer;
+}
+.rf-link:hover {
+  color: var(--teald);
+}
+
+.rf-done {
+  text-align: center;
+}
+.rf-body {
+  color: var(--rf-grey);
+  font-size: 14px;
+  margin: 10px 0 0;
+}
+
+@media (max-width: 480px) {
+  .rf-shell {
+    padding: 18px 12px 40px;
+  }
+  .rf-card {
+    padding: 24px 18px 22px;
+    border-radius: 10px;
+  }
+  .rf-row {
+    flex-direction: column;
+    gap: 14px;
+  }
+  .rf-card h1 {
+    font-size: 19px;
+  }
+  /* >= 16px : evite le zoom automatique d'iOS au focus (maquette). */
+  .rf-field input,
+  .rf-field select {
+    font-size: 16px;
+  }
+}

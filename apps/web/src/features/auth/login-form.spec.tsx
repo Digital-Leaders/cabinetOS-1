@@ -164,12 +164,14 @@ describe('LoginForm (comportement)', () => {
     expect(signInWithEmailMock).not.toHaveBeenCalled();
   });
 
-  it('« Créer mon cabinet » affiche un message bientot disponible, jamais une page morte', async () => {
+  it('« Créer mon cabinet » ouvre l inscription du fondateur (etape 2, TASK-053)', async () => {
+    // Etape 1 : ce repere affichait « bientot disponible ». La spec de l'etape 1 prevoyait
+    // qu'il s'active avec l'etape 2, sans changer l'ecran : c'est le cas ici.
     const user = userEvent.setup();
     renderForm();
-
     await user.click(screen.getByRole('button', { name: 'Créer mon cabinet' }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent(/bientôt/);
+    expect(pushMock).toHaveBeenCalledWith('/fr/register');
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 });
