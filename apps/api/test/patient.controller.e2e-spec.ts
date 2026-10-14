@@ -11,6 +11,7 @@ import { createOrganization } from '../src/modules/organization/infrastructure/o
 import { createMembership } from '../src/modules/organization/infrastructure/membership.queries';
 import { createPatient } from '../src/business/patient/infrastructure/patient.queries';
 import { GlobalExceptionFilter } from '../src/modules/shared/filters/http-exception.filter';
+import { createTestAccount } from './fixtures/test-accounts';
 
 // TASK-025 (BUILD-002, EA-009) : premier controleur reel du depot -- test e2e complet
 // (pas seulement les fonctions de requete, deja testees separement). Meme patron
@@ -71,11 +72,7 @@ describe('PatientController (e2e, TASK-025)', () => {
       );
     }
 
-    await fetch(`${httpServer}/api/v1/auth/sign-up/email`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Origin: origin },
-      body: JSON.stringify({ email: testEmail, password: testPassword, name: 'Patient Test' }),
-    });
+    await createTestAccount({ email: testEmail, password: testPassword, name: 'Patient Test' });
     const usersResult = await databaseService.db.execute(
       sql`SELECT id FROM users WHERE email = ${testEmail}`,
     );

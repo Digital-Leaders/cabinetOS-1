@@ -11,6 +11,7 @@ import { createOrganization } from '../src/modules/organization/infrastructure/o
 import { createMembership } from '../src/modules/organization/infrastructure/membership.queries';
 
 import { GlobalExceptionFilter } from '../src/modules/shared/filters/http-exception.filter';
+import { createTestAccount } from './fixtures/test-accounts';
 
 // Parcours d'acces, etape 1, commit 3 -- LE livrable le plus important de ce
 // chantier (dixit la spec) : preuve qu'apres bascule d'organisation en cours de
@@ -89,11 +90,7 @@ describe('Changement d organisation en cours de session -- etancheite (e2e, comm
       );
     }
 
-    await fetch(`${httpServer}/api/v1/auth/sign-up/email`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Origin: origin },
-      body: JSON.stringify({ email: testEmail, password: testPassword, name: 'Org Switch Test' }),
-    });
+    await createTestAccount({ email: testEmail, password: testPassword, name: 'Org Switch Test' });
     const usersResult = await databaseService.db.execute(
       sql`SELECT id FROM users WHERE email = ${testEmail}`,
     );
