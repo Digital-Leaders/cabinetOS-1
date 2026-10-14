@@ -10,7 +10,6 @@ import { DatabaseService } from '../src/modules/shared/database/database.service
 import { createOrganization } from '../src/modules/organization/infrastructure/organization.queries';
 import { createMembership } from '../src/modules/organization/infrastructure/membership.queries';
 import { GuardTestModule } from './fixtures/guard-test.controller';
-import { createTestAccount } from './fixtures/test-accounts';
 
 // TASK-016 : Guards d autorisation. Utilise un controleur jetable
 // (test/fixtures/guard-test.controller.ts) pour tester le Guard independamment
@@ -79,7 +78,11 @@ describe('Guards Role/Permission (e2e, TASK-016)', () => {
       sql`INSERT INTO role_permissions (role_id, permission_id) VALUES (${roleWithPermissionId}, ${actualPermissionId})`,
     );
 
-    await createTestAccount({ email: testEmail, password: testPassword, name: 'Guard Test' });
+    await fetch(`${httpServer}/api/v1/auth/sign-up/email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: origin },
+      body: JSON.stringify({ email: testEmail, password: testPassword, name: 'Guard Test' }),
+    });
 
     const usersResult = await databaseService.db.execute(
       sql`SELECT id FROM users WHERE email = ${testEmail}`,

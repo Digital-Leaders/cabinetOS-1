@@ -1,4 +1,3 @@
-export { RegistrationModule } from './registration.module';
 export {
   registrationRequests,
   registrationEvents,
@@ -11,12 +10,6 @@ export {
   type RegistrationEventAction,
 } from './infrastructure/schema';
 
-export {
-  GENERALISTE,
-  REGISTRATION_CITIES,
-  ORPHAN_ACCOUNT_MIN_AGE_MINUTES,
-} from './domain/registration-rules';
-
-// TASK-051/052 (BUILD-004 etape 2, EA-014) : schema, module et regles exposes. Aucune
-// fonction d'ecriture exportee : l'inscription passe uniquement par le controleur.
-// Le statut cote fondateur (EA-015) et l'espace admin (EA-017) viendront s'y ajouter.
+// TASK-051 (BUILD-004 etape 2, EA-014) : surface publique limitee au schema pour
+// l'instant. Le cas d'usage d'inscription (TASK-052), le statut cote fondateur
+// (EA-015) et l'espace admin (EA-017) viendront s'y ajouter, chacun dans sa TASK.

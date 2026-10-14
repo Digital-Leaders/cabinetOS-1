@@ -16,6 +16,7 @@ import { sql } from 'drizzle-orm';
 describe('AuthProvider (TASK-014)', () => {
   let app: INestApplication;
   let authProvider: AuthProvider;
+  let httpServer: string;
   const testEmail = `authprovider-test-${Date.now()}@example.com`;
   const testPassword = 'password1234';
 
@@ -33,6 +34,9 @@ describe('AuthProvider (TASK-014)', () => {
     app.setGlobalPrefix('api/v1', { exclude: ['api/v1/auth/{*splat}'] });
 
     await app.init();
+    await app.listen(0);
+    const address = app.getHttpServer().address();
+    httpServer = `http://127.0.0.1:${address.port}`;
   });
 
   afterAll(async () => {
@@ -43,15 +47,16 @@ describe('AuthProvider (TASK-014)', () => {
   });
 
   it('resout l identite a partir d une session valide', async () => {
-    // BUILD-004 etape 2 (ADR-0021 D2) : l'inscription HTTP native est fermee ; le
-    // compte est cree par le port lui-meme (createAccount), qui ouvre la session.
-    const created = await authProvider.createAccount({
-      email: testEmail,
-      password: testPassword,
-      name: 'Auth Provider Test',
+    const signUpRes = await fetch(`${httpServer}/api/v1/auth/sign-up/email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: 'http://localhost:3001' },
+      body: JSON.stringify({
+        email: testEmail,
+        password: testPassword,
+        name: 'Auth Provider Test',
+      }),
     });
-    expect(created.ok).toBe(true);
-    const setCookie = created.ok ? created.sessionCookies[0] : undefined;
+    const setCookie = signUpRes.headers.get('set-cookie');
     expect(setCookie).toBeTruthy();
 
     const headers = new Headers();
@@ -61,24 +66,6 @@ describe('AuthProvider (TASK-014)', () => {
     expect(identity).not.toBeNull();
     expect(identity?.email).toBe(testEmail);
     expect(identity?.userId).toBeDefined();
-  });
-
-  it('createAccount renvoie EMAIL_ALREADY_USED sans lever pour un email deja pris (ADR-0021 D2)', async () => {
-    const again = await authProvider.createAccount({
-      email: testEmail.toUpperCase(),
-      password: testPassword,
-      name: 'Doublon',
-    });
-    expect(again).toEqual({ ok: false, reason: 'EMAIL_ALREADY_USED' });
-  });
-
-  it('createAccount renvoie INVALID_PASSWORD sans lever pour un mot de passe trop court', async () => {
-    const result = await authProvider.createAccount({
-      email: `short-${testEmail}`,
-      password: 'court',
-      name: 'Court',
-    });
-    expect(result).toEqual({ ok: false, reason: 'INVALID_PASSWORD' });
   });
 
   it('retourne null pour une requete sans session', async () => {

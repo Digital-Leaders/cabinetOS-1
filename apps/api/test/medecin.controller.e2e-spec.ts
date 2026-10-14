@@ -10,7 +10,6 @@ import { DatabaseService } from '../src/modules/shared/database/database.service
 import { createOrganization } from '../src/modules/organization/infrastructure/organization.queries';
 import { createMembership } from '../src/modules/organization/infrastructure/membership.queries';
 import { GlobalExceptionFilter } from '../src/modules/shared/filters/http-exception.filter';
-import { createTestAccount } from './fixtures/test-accounts';
 
 // TASK-045 (BUILD-003, EA-012) : test e2e complet du controleur Medecin -- meme
 // patron que patient.controller.e2e-spec.ts (TASK-025) et permissions-guard.e2e-spec.ts
@@ -72,7 +71,11 @@ describe('MedecinController (e2e, TASK-045)', () => {
       );
     }
 
-    await createTestAccount({ email: testEmail, password: testPassword, name: 'Medecin Test' });
+    await fetch(`${httpServer}/api/v1/auth/sign-up/email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: origin },
+      body: JSON.stringify({ email: testEmail, password: testPassword, name: 'Medecin Test' }),
+    });
     const usersResult = await databaseService.db.execute(
       sql`SELECT id FROM users WHERE email = ${testEmail}`,
     );

@@ -24,32 +24,6 @@ export interface AuthProvider {
    * Hors perimetre : revocation de masse (toutes les sessions d un utilisateur).
    */
   revokeSession(headers: Headers, sessionToken: string): Promise<void>;
-
-  /**
-   * Cree un compte cote serveur (BUILD-004 etape 2, ADR-0021 D2) et ouvre sa
-   * session. C'est le SEUL chemin de creation de compte : l'inscription HTTP
-   * native est fermee (hook dans auth.ts). Les appelants sont le cas d'usage
-   * d'inscription du fondateur et le script des comptes d'equipe.
-   *
-   * Ne leve pas pour les refus attendus (email deja pris, mot de passe refuse) :
-   * ils reviennent en resultat, pour que l'appelant decide du message.
-   */
-  createAccount(input: CreateAccountInput): Promise<CreateAccountResult>;
 }
-
-export interface CreateAccountInput {
-  email: string;
-  password: string;
-  name: string;
-}
-
-export type CreateAccountResult =
-  | {
-      ok: true;
-      userId: string;
-      /** En-tetes Set-Cookie de la session ouverte, a transmettre tels quels. */
-      sessionCookies: string[];
-    }
-  | { ok: false; reason: 'EMAIL_ALREADY_USED' | 'INVALID_PASSWORD' };
 
 export const AUTH_PROVIDER = Symbol('AUTH_PROVIDER');

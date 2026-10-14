@@ -10,7 +10,6 @@ import { DatabaseService } from '../src/modules/shared/database/database.service
 import { createOrganization } from '../src/modules/organization/infrastructure/organization.queries';
 import { createMembership } from '../src/modules/organization/infrastructure/membership.queries';
 import { GlobalExceptionFilter } from '../src/modules/shared/filters/http-exception.filter';
-import { createTestAccount } from './fixtures/test-accounts';
 
 // Parcours d'acces, etape 1, commit 2 (ADR-0019) : GET /identity/organizations et
 // POST /identity/organizations/:id/default sont les deux endpoints qui alimentent
@@ -76,7 +75,11 @@ describe('IdentityController -- organizations (e2e, ADR-0019)', () => {
     );
 
     // Utilisateur A : une seule organisation.
-    await createTestAccount({ email: emailSingleOrg, password, name: 'Single Org User' });
+    await fetch(`${httpServer}/api/v1/auth/sign-up/email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: origin },
+      body: JSON.stringify({ email: emailSingleOrg, password, name: 'Single Org User' }),
+    });
     const singleUserResult = await databaseService.db.execute(
       sql`SELECT id FROM users WHERE email = ${emailSingleOrg}`,
     );
@@ -84,7 +87,11 @@ describe('IdentityController -- organizations (e2e, ADR-0019)', () => {
     await createMembership(databaseService, orgSingle.id, { userId: singleUserId, roleId });
 
     // Utilisateur B : deux organisations, aucun defaut choisi.
-    await createTestAccount({ email: emailMultiOrgNoDefault, password, name: 'Multi Org User' });
+    await fetch(`${httpServer}/api/v1/auth/sign-up/email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: origin },
+      body: JSON.stringify({ email: emailMultiOrgNoDefault, password, name: 'Multi Org User' }),
+    });
     const multiUserResult = await databaseService.db.execute(
       sql`SELECT id FROM users WHERE email = ${emailMultiOrgNoDefault}`,
     );

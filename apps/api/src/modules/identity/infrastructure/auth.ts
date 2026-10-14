@@ -1,5 +1,4 @@
 import { betterAuth } from 'better-auth';
-import { APIError, createAuthMiddleware } from 'better-auth/api';
 import { drizzleAdapter } from '@better-auth/drizzle-adapter';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
@@ -35,21 +34,6 @@ export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 7,
     updateAge: 60 * 60 * 24,
-  },
-  // BUILD-004 etape 2 (ADR-0021 D2) : l'inscription native est FERMEE au public.
-  // Un appel HTTP direct a /sign-up/email est refuse (403) : plus aucun compte ne
-  // peut exister sans demande d'inscription. Les appels INTERNES (auth.api.signUpEmail,
-  // sans requete HTTP -- ctx.request absent) restent permis : ce sont ceux du cas
-  // d'usage d'inscription et du script des comptes d'equipe, via AuthProvider.
-  // Verifie par spike (Better-Auth 1.6.25) et par auth.e2e-spec.ts.
-  hooks: {
-    before: createAuthMiddleware(async (ctx) => {
-      if (ctx.path === '/sign-up/email' && ctx.request) {
-        throw new APIError('FORBIDDEN', {
-          message: "L'inscription se fait depuis la page Creer mon cabinet.",
-        });
-      }
-    }),
   },
   telemetry: {
     enabled: false,

@@ -8,16 +8,10 @@ import { AppModule } from '../src/app.module';
 import { GlobalExceptionFilter } from '../src/modules/shared/filters/http-exception.filter';
 import { auth, authPool } from '../src/modules/identity/infrastructure/auth';
 import { DatabaseService } from '../src/modules/shared/database/database.service';
-import { createTestAccount } from './fixtures/test-accounts';
 
 // TASK-013 : parcours e2e inscription -> connexion -> deconnexion, via les vrais
 // endpoints Better-Auth (/sign-up/email, /sign-in/email, /sign-out -- noms imposes
 // par Better-Auth lui-meme, cf. ADR-007 : on utilise son implementation telle quelle).
-//
-// BUILD-004 etape 2 (ADR-0021 D2) : l'inscription HTTP native est desormais FERMEE.
-// Le premier test prouve le refus ; le compte est ensuite cree par le seul chemin
-// restant (creation cote serveur via AuthProvider), et la suite du parcours --
-// hachage, connexion, refus du mauvais mot de passe, deconnexion -- est inchangee.
 
 describe('Authentification Better-Auth (e2e, TASK-013)', () => {
   let app: INestApplication;
@@ -52,28 +46,15 @@ describe('Authentification Better-Auth (e2e, TASK-013)', () => {
     await app.close();
   });
 
-  it("l'inscription HTTP native est fermee : 403, et aucun compte n'est cree (ADR-0021 D2)", async () => {
+  it("un utilisateur peut s'inscrire (sign-up/email)", async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/auth/sign-up/email')
       .set('Origin', origin)
       .send({ email: testEmail, password: testPassword, name: 'E2E Test User' });
 
-    expect(response.status).toBe(403);
-    const databaseService = app.get(DatabaseService);
-    const result = await databaseService.db.execute(
-      sql`SELECT id FROM users WHERE email = ${testEmail}`,
-    );
-    expect(result.rows).toHaveLength(0);
-  });
-
-  it('un compte se cree cote serveur (seul chemin restant, via AuthProvider)', async () => {
-    const account = await createTestAccount({
-      email: testEmail,
-      password: testPassword,
-      name: 'E2E Test User',
-    });
-    expect(account.userId).toBeDefined();
-    expect(account.setCookie).toContain('session_token');
+    expect(response.status).toBe(200);
+    expect(response.body.user.email).toBe(testEmail);
+    expect(response.body.token).toBeDefined();
   });
 
   it('le mot de passe est hache en base, jamais stocke en clair', async () => {

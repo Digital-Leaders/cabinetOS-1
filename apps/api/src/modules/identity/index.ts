@@ -18,10 +18,5 @@ export {
   findOrganizationMembershipsForUser,
   setDefaultOrganizationMembership,
 } from './infrastructure/user.queries';
-export type {
-  AuthProvider,
-  AuthenticatedIdentity,
-  CreateAccountInput,
-  CreateAccountResult,
-} from './application/auth-provider.port';
+export type { AuthProvider, AuthenticatedIdentity } from './application/auth-provider.port';
 export { AUTH_PROVIDER } from './application/auth-provider.port';

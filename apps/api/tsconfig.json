@@ -8,5 +8,5 @@
     "types": ["jest", "node"],
     "isolatedModules": true
   },
-  "include": ["src/**/*", "test/**/*", "scripts/**/*"]
+  "include": ["src/**/*", "test/**/*"]
 }
