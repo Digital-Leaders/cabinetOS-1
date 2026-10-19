@@ -69,6 +69,13 @@ export const registrationRequests = pgTable(
     // Anti-abus du renvoi d'email : 60 s (D7), applique en TASK-054.
     lastEmailResentAt: timestamp('last_email_resent_at'),
 
+    // ADR-0022 : dernier message de complement SORTANT, conserve a seule fin d'etre renvoye
+    // a l'identique -- exactement les parametres du modele verification-complement, tels
+    // qu'envoyes. Ecrit par EA-018, ecrase a chaque nouvelle demande. Jamais la reponse du
+    // medecin, jamais un historique (R7 reformulee).
+    complementRequestedInfo: text('complement_requested_info'),
+    complementMessage: text('complement_message'),
+
     // Renseigne par la cascade de validation (EA-018).
     organizationId: uuid('organization_id').references(() => organizations.id),
 
@@ -95,6 +102,16 @@ export const registrationRequests = pgTable(
     check(
       'registration_requests_active_has_organization_check',
       sql`${table.status} <> 'ACTIVE' OR ${table.organizationId} IS NOT NULL`,
+    ),
+    // ADR-0022 : un complement demande porte toujours son message (renvoi possible) ...
+    check(
+      'registration_requests_complement_present_check',
+      sql`${table.status} <> 'COMPLEMENT_REQUESTED' OR (${table.complementRequestedInfo} IS NOT NULL AND ${table.complementMessage} IS NOT NULL)`,
+    ),
+    // ... et une demande close (ACTIVE, REFUSED) n'en garde aucun (hygiene des donnees).
+    check(
+      'registration_requests_complement_cleared_check',
+      sql`${table.status} NOT IN ('ACTIVE', 'REFUSED') OR (${table.complementRequestedInfo} IS NULL AND ${table.complementMessage} IS NULL)`,
     ),
   ],
 );

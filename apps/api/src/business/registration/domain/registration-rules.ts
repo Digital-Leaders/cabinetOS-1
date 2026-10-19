@@ -48,3 +48,16 @@ export function optionalText(value: string | undefined | null): string | null {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
 }
+
+/** Delai anti-abus du renvoi d'email cote fondateur (ADR-0021 D7, confirme). */
+export const RESEND_EMAIL_WINDOW_SECONDS = 60;
+
+/**
+ * Email masque pour l'ecran de statut (brief §5.2) : diagnostic seulement -- la premiere
+ * lettre, puis « ••••• », puis le domaine. Ex. y.bennani@cabinet.ma -> y•••••@cabinet.ma.
+ */
+export function maskEmail(email: string): string {
+  const at = email.lastIndexOf('@');
+  if (at <= 0) return '•••••';
+  return `${email[0]}•••••${email.slice(at)}`;
+}

@@ -15,6 +15,7 @@ export {
   GENERALISTE,
   REGISTRATION_CITIES,
   ORPHAN_ACCOUNT_MIN_AGE_MINUTES,
+  RESEND_EMAIL_WINDOW_SECONDS,
 } from './domain/registration-rules';
 
 // TASK-051/052 (BUILD-004 etape 2, EA-014) : schema, module et regles exposes. Aucune
