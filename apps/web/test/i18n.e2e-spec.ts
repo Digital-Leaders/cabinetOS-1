@@ -96,4 +96,17 @@ describe('i18n locales (e2e)', () => {
     expect(res.status).toBeLessThan(400);
     expect(res.headers.get('location')).toContain('/fr/login');
   });
+
+  // BUILD-004 etape 2, TASK-060 : l'espace admin exige une session (le controle fin, administrateur de
+  // plateforme, est fait par le serveur). Sans session, retour a la connexion.
+  it.each(['/fr/admin', '/ar/admin', '/fr/admin/0198d1f0-aaaa-7bbb-8ccc-123456789abc'])(
+    'espace admin %s sans session : renvoi vers la connexion',
+    async (path) => {
+      const res = await fetch(`${BASE_URL}${path}`, { redirect: 'manual' });
+
+      expect(res.status).toBeGreaterThanOrEqual(300);
+      expect(res.status).toBeLessThan(400);
+      expect(res.headers.get('location')).toMatch(/\/(fr|ar)\/login/);
+    },
+  );
 });

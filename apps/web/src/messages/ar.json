@@ -365,5 +365,129 @@
       "whatsapp": "واتساب",
       "phone": "اتصل بنا"
     }
+  },
+  "Admin": {
+    "title": "طلبات التسجيل",
+    "badge": "الإدارة",
+    "logout": "تسجيل الخروج",
+    "loading": "جارٍ التحميل…",
+    "retry": "أعد المحاولة",
+    "back": "العودة إلى الطلبات",
+    "notSpecified": "غير مذكور",
+    "loadMore": "عرض المزيد",
+    "loadingMore": "جارٍ التحميل…",
+    "filters": {
+      "label": "تصفية الطلبات",
+      "pending": "قيد المعالجة",
+      "validated": "المقبولة",
+      "refused": "المرفوضة"
+    },
+    "search": {
+      "placeholder": "ابحث عن اسم أو عيادة…",
+      "label": "البحث عن طلب"
+    },
+    "doctorPrefix": "د.",
+    "status": {
+      "PENDING_VERIFICATION": "قيد التحقق",
+      "COMPLEMENT_REQUESTED": "طُلبت معلومة إضافية",
+      "ACTIVE": "مقبول",
+      "REFUSED": "مرفوض"
+    },
+    "list": {
+      "empty": {
+        "pending": "لا توجد طلبات للمعالجة في الوقت الحالي.",
+        "validated": "لا توجد طلبات مقبولة.",
+        "refused": "لا توجد طلبات مرفوضة.",
+        "search": "لا توجد نتائج لهذا البحث."
+      },
+      "error": "تعذّر عرض الطلبات في الوقت الحالي."
+    },
+    "forbidden": {
+      "title": "وصول محجوز",
+      "body": "هذه المساحة محجوزة لفريق CabinetOS.",
+      "home": "العودة إلى الرئيسية"
+    },
+    "detail": {
+      "received": "استُلم الطلب في {date}",
+      "notFound": "الطلب غير موجود.",
+      "error": "تعذّر عرض هذا الطلب في الوقت الحالي.",
+      "doctor": "الطبيب",
+      "structure": "مؤسسة الممارسة",
+      "fields": {
+        "firstName": "الاسم الشخصي",
+        "lastName": "الاسم العائلي",
+        "email": "البريد الإلكتروني",
+        "specialty": "التخصص",
+        "inpe": "INPE",
+        "numeroOrdre": "رقم الهيئة",
+        "structureName": "العيادة",
+        "city": "المدينة",
+        "address": "العنوان"
+      },
+      "complement": {
+        "title": "طُلبت معلومة إضافية",
+        "info": "المعلومة المطلوبة",
+        "message": "الرسالة المرسلة إلى الطبيب"
+      },
+      "refusal": {
+        "title": "الرفض",
+        "internalReason": "السبب الداخلي (لا يُبلَّغ لصاحب الطلب)",
+        "message": "الرسالة المبلَّغة لصاحب الطلب"
+      },
+      "verify": {
+        "title": "التحقق",
+        "note": "روابط إلى عمليات بحث جاهزة. لا يستنتج CabinetOS أي شيء تلقائيًا: أنتم من يقدّر مدى تطابق المعلومات.",
+        "google": "البحث في Google",
+        "maps": "خرائط Google",
+        "directory": "الدليل الطبي",
+        "directoryWord": "الدليل الطبي"
+      },
+      "note": {
+        "title": "ملاحظة داخلية للتحقق",
+        "sub": "اختيارية — لا يراها إلا الفريق، ولا تُبلَّغ أبدًا للطبيب.",
+        "label": "ملاحظة داخلية",
+        "save": "حفظ الملاحظة",
+        "saving": "جارٍ الحفظ…",
+        "saved": "✓ تم حفظ الملاحظة",
+        "error": "تعذّر حفظ الملاحظة. أعد المحاولة."
+      },
+      "history": {
+        "title": "السجل",
+        "by": "بواسطة {name}",
+        "actions": {
+          "REQUEST_SUBMITTED": "استُلم الطلب",
+          "COMPLEMENT_REQUESTED": "طُلبت معلومة إضافية",
+          "RETURNED_TO_VERIFICATION": "أُعيد إلى التحقق",
+          "VALIDATED": "تم قبول الطلب",
+          "REFUSED": "تم رفض الطلب"
+        },
+        "emailSent": {
+          "registration-confirmation": "أُرسل بريد التأكيد إلى صاحب الطلب",
+          "verification-complement": "أُرسل بريد طلب المعلومة الإضافية",
+          "account-activation": "أُرسل بريد التفعيل",
+          "registration-refusal": "أُرسل بريد الرفض"
+        },
+        "emailFailed": {
+          "registration-confirmation": "تعذّر إرسال بريد التأكيد",
+          "verification-complement": "تعذّر إرسال بريد طلب المعلومة الإضافية",
+          "account-activation": "تعذّر إرسال بريد التفعيل",
+          "registration-refusal": "تعذّر إرسال بريد الرفض"
+        },
+        "emailResend": {
+          "registration-confirmation": "طُلبت إعادة إرسال بريد التأكيد",
+          "verification-complement": "طُلبت إعادة إرسال بريد المعلومة الإضافية",
+          "account-activation": "طُلبت إعادة إرسال بريد التفعيل",
+          "registration-refusal": "طُلبت إعادة إرسال بريد الرفض"
+        },
+        "retryable": "يمكن إعادة الإرسال",
+        "unknown": "إجراء غير معروف"
+      },
+      "actions": {
+        "validate": "قبول",
+        "complement": "طلب معلومة إضافية",
+        "refuse": "رفض",
+        "soon": "ستتوفر هذه الإجراءات الثلاثة قريبًا."
+      }
+    }
   }
 }

@@ -46,6 +46,12 @@ jest.mock('../../lib/identity-client', () => ({
   fetchMyOrganizations: (...args: unknown[]) => fetchMyOrganizationsMock(...args),
 }));
 
+// Etape 2 (EA-017, TASK-060) : un compte sans organisation peut etre un administrateur de plateforme.
+const fetchIsPlatformAdminMock = jest.fn();
+jest.mock('../../lib/admin-client', () => ({
+  fetchIsPlatformAdmin: (...args: unknown[]) => fetchIsPlatformAdminMock(...args),
+}));
+
 // Etape 2 (EA-016, TASK-057) : la connexion lit aussi le statut de la demande d'inscription.
 const fetchRegistrationStatusMock = jest.fn();
 jest.mock('../../lib/registration-status-client', () => ({
@@ -77,6 +83,9 @@ describe('LoginForm (comportement)', () => {
     // deroule exactement comme avant -- tous les tests existants ci-dessous restent inchanges.
     fetchRegistrationStatusMock.mockReset();
     fetchRegistrationStatusMock.mockResolvedValue({ status: null });
+    // Par defaut : pas administrateur de plateforme -- l'etape 1 se deroule comme avant.
+    fetchIsPlatformAdminMock.mockReset();
+    fetchIsPlatformAdminMock.mockResolvedValue(false);
     signInWithEmailMock.mockResolvedValue({ id: 'u1', name: 'Fatima', email: 'f@cabinet.ma' });
   });
 
@@ -287,5 +296,94 @@ describe('LoginForm -- routage selon le statut de l inscription (TASK-057)', () 
 
     expect(await screen.findByRole('alert')).toHaveTextContent(messages.Login.invalidCredentials);
     expect(fetchRegistrationStatusMock).not.toHaveBeenCalled();
+  });
+});
+
+// BUILD-004 etape 2, EA-017 / TASK-060 : un administrateur de plateforme (equipe CabinetOS) n'a
+// AUCUNE organisation. Avant, ce cas etait traite comme une erreur (« aucune organisation »).
+describe('LoginForm -- administrateur de plateforme sans organisation (TASK-060)', () => {
+  beforeEach(() => {
+    pushMock.mockClear();
+    signInWithEmailMock.mockReset();
+    fetchMyOrganizationsMock.mockReset();
+    setOrganizationIdMock.mockReset();
+    fetchRegistrationStatusMock.mockReset();
+    fetchIsPlatformAdminMock.mockReset();
+    signInWithEmailMock.mockResolvedValue({ id: 'u1', name: 'Zineb', email: 'z@cabinetos.ma' });
+    fetchRegistrationStatusMock.mockResolvedValue({ status: null });
+  });
+
+  it('aucune organisation + administrateur : conduit a l espace admin, sans erreur', async () => {
+    fetchMyOrganizationsMock.mockResolvedValue([]);
+    fetchIsPlatformAdminMock.mockResolvedValue(true);
+    const user = userEvent.setup();
+    renderForm();
+    await submitValidCredentials(user);
+
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/fr/admin'));
+    expect(pushMock).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(setOrganizationIdMock).not.toHaveBeenCalled();
+  });
+
+  it('garde la langue courante', async () => {
+    fetchMyOrganizationsMock.mockResolvedValue([]);
+    fetchIsPlatformAdminMock.mockResolvedValue(true);
+    const user = userEvent.setup();
+    render(<LoginForm locale="ar" />);
+    await user.type(screen.getByLabelText('E-mail'), 'z@cabinetos.ma');
+    await user.type(screen.getByLabelText('Mot de passe'), 'password1234');
+    await user.click(screen.getByRole('button', { name: 'Se connecter' }));
+
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/ar/admin'));
+  });
+
+  it('aucune organisation + PAS administrateur : l erreur de l etape 1 est conservee', async () => {
+    fetchMyOrganizationsMock.mockResolvedValue([]);
+    fetchIsPlatformAdminMock.mockResolvedValue(false);
+    const user = userEvent.setup();
+    renderForm();
+    await submitValidCredentials(user);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(messages.Login.noOrganization);
+    expect(pushMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      'une seule organisation',
+      [{ organizationId: 'org-1', organizationName: 'A', isDefault: false }],
+      '/fr',
+    ],
+    [
+      'plusieurs organisations sans defaut',
+      [
+        { organizationId: 'org-1', organizationName: 'A', isDefault: false },
+        { organizationId: 'org-2', organizationName: 'B', isDefault: false },
+      ],
+      '/fr/choose-organization',
+    ],
+  ])(
+    '%s : la question « administrateur ? » n est JAMAIS posee -- parcours de l etape 1 intact',
+    async (_label, orgs, destination) => {
+      fetchMyOrganizationsMock.mockResolvedValue(orgs);
+      fetchIsPlatformAdminMock.mockResolvedValue(true);
+      const user = userEvent.setup();
+      renderForm();
+      await submitValidCredentials(user);
+
+      await waitFor(() => expect(pushMock).toHaveBeenCalledWith(destination));
+      expect(fetchIsPlatformAdminMock).not.toHaveBeenCalled();
+    },
+  );
+
+  it('un fondateur non valide va a son ecran de statut : la question n est pas posee non plus', async () => {
+    fetchRegistrationStatusMock.mockResolvedValue({ status: 'PENDING_VERIFICATION' });
+    const user = userEvent.setup();
+    renderForm();
+    await submitValidCredentials(user);
+
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/fr/registration-status'));
+    expect(fetchIsPlatformAdminMock).not.toHaveBeenCalled();
   });
 });
