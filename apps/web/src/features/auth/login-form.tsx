@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { signInWithEmail, AuthError } from '../../lib/auth-client';
 import { fetchMyOrganizations } from '../../lib/identity-client';
 import { fetchRegistrationStatus } from '../../lib/registration-status-client';
+import { fetchIsPlatformAdmin } from '../../lib/admin-client';
 import { needsStatusScreen, statusScreenPath } from '../../lib/registration-access';
 import { resolveOrganization } from '../../lib/resolve-organization';
 import { setOrganizationId } from '../../lib/session';
@@ -76,6 +77,12 @@ export function LoginForm({ locale }: { locale: string }) {
         router.push(`/${locale}`);
       } else if (resolution.type === 'choose') {
         router.push(`/${locale}/choose-organization`);
+      } else if (await fetchIsPlatformAdmin()) {
+        // Etape 2 (EA-017, TASK-060) : un administrateur de plateforme (equipe CabinetOS) n'a
+        // AUCUNE organisation -- ce n'est pas une erreur, son espace est l'administration.
+        // Question posee seulement quand il n'y a aucune organisation : un compte avec au moins
+        // une organisation n'est jamais concerne, son parcours reste celui de l'etape 1.
+        router.push(`/${locale}/admin`);
       } else {
         // "none" : hors perimetre de l etape 1 (comptes toujours crees avec au
         // moins une adhesion) -- signale plutot qu un ecran invente sans besoin reel.

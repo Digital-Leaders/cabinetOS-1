@@ -365,5 +365,129 @@
       "whatsapp": "WhatsApp",
       "phone": "Nous appeler"
     }
+  },
+  "Admin": {
+    "title": "Demandes d'inscription",
+    "badge": "Administration",
+    "logout": "Se déconnecter",
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "back": "Retour aux demandes",
+    "notSpecified": "non renseigné",
+    "loadMore": "Afficher plus",
+    "loadingMore": "Chargement…",
+    "filters": {
+      "label": "Filtrer les demandes",
+      "pending": "À traiter",
+      "validated": "Validées",
+      "refused": "Refusées"
+    },
+    "search": {
+      "placeholder": "Rechercher un nom, un cabinet…",
+      "label": "Rechercher une demande"
+    },
+    "doctorPrefix": "Dr",
+    "status": {
+      "PENDING_VERIFICATION": "En vérification",
+      "COMPLEMENT_REQUESTED": "Complément demandé",
+      "ACTIVE": "Validée",
+      "REFUSED": "Refusée"
+    },
+    "list": {
+      "empty": {
+        "pending": "Aucune demande à traiter pour le moment.",
+        "validated": "Aucune demande validée.",
+        "refused": "Aucune demande refusée.",
+        "search": "Aucun résultat pour cette recherche."
+      },
+      "error": "Impossible d'afficher les demandes pour le moment."
+    },
+    "forbidden": {
+      "title": "Accès réservé",
+      "body": "Cet espace est réservé à l'équipe CabinetOS.",
+      "home": "Retour à l'accueil"
+    },
+    "detail": {
+      "received": "Demande reçue le {date}",
+      "notFound": "Demande introuvable.",
+      "error": "Impossible d'afficher cette demande pour le moment.",
+      "doctor": "Médecin",
+      "structure": "Structure d'exercice",
+      "fields": {
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "email": "Email",
+        "specialty": "Spécialité",
+        "inpe": "INPE",
+        "numeroOrdre": "N° d'Ordre",
+        "structureName": "Cabinet",
+        "city": "Ville",
+        "address": "Adresse"
+      },
+      "complement": {
+        "title": "Complément demandé",
+        "info": "Information demandée",
+        "message": "Message envoyé au médecin"
+      },
+      "refusal": {
+        "title": "Refus",
+        "internalReason": "Motif interne (non communiqué au demandeur)",
+        "message": "Message communiqué au demandeur"
+      },
+      "verify": {
+        "title": "Vérifier",
+        "note": "Raccourcis vers des recherches préparées. CabinetOS ne conclut jamais automatiquement : c'est vous qui appréciez la concordance des informations.",
+        "google": "Rechercher sur Google",
+        "maps": "Google Maps",
+        "directory": "Annuaire médical",
+        "directoryWord": "annuaire médical"
+      },
+      "note": {
+        "title": "Note interne de vérification",
+        "sub": "Facultative — visible uniquement par l'équipe, jamais communiquée au médecin.",
+        "label": "Note interne",
+        "save": "Enregistrer la note",
+        "saving": "Enregistrement…",
+        "saved": "✓ Note enregistrée",
+        "error": "La note n'a pas pu être enregistrée. Réessayez."
+      },
+      "history": {
+        "title": "Historique",
+        "by": "par {name}",
+        "actions": {
+          "REQUEST_SUBMITTED": "Demande reçue",
+          "COMPLEMENT_REQUESTED": "Complément demandé",
+          "RETURNED_TO_VERIFICATION": "Remise en vérification",
+          "VALIDATED": "Demande validée",
+          "REFUSED": "Demande refusée"
+        },
+        "emailSent": {
+          "registration-confirmation": "Email de confirmation envoyé au demandeur",
+          "verification-complement": "Email de demande de complément envoyé",
+          "account-activation": "Email d'activation envoyé",
+          "registration-refusal": "Email de refus envoyé"
+        },
+        "emailFailed": {
+          "registration-confirmation": "Échec d'envoi de l'email de confirmation",
+          "verification-complement": "Échec d'envoi de l'email de demande de complément",
+          "account-activation": "Échec d'envoi de l'email d'activation",
+          "registration-refusal": "Échec d'envoi de l'email de refus"
+        },
+        "emailResend": {
+          "registration-confirmation": "Renvoi de l'email de confirmation demandé",
+          "verification-complement": "Renvoi de l'email de complément demandé",
+          "account-activation": "Renvoi de l'email d'activation demandé",
+          "registration-refusal": "Renvoi de l'email de refus demandé"
+        },
+        "retryable": "renvoi possible",
+        "unknown": "Action inconnue"
+      },
+      "actions": {
+        "validate": "Valider",
+        "complement": "Demander un complément",
+        "refuse": "Refuser",
+        "soon": "Ces trois actions seront disponibles prochainement."
+      }
+    }
   }
 }
