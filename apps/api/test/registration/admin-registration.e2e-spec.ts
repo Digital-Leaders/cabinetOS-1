@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
 import { toNodeHandler } from 'better-auth/node';
-import { sql } from 'drizzle-orm';
+import { sql, TransactionRollbackError } from 'drizzle-orm';
 import { Pool } from 'pg';
 import { uuidv7 } from 'uuidv7';
 import { AppModule } from '../../src/app.module';
@@ -11,6 +11,7 @@ import { DatabaseService } from '../../src/modules/shared/database/database.serv
 import { GlobalExceptionFilter } from '../../src/modules/shared/filters/http-exception.filter';
 import { createOrganization, createMembership } from '../../src/modules/organization';
 import { createTestAccount } from '../fixtures/test-accounts';
+import { countRegistrationRequests } from '../../src/business/registration/infrastructure/admin-registration.queries';
 
 // BUILD-004 etape 2, EA-017 / TASK-059 : l'API de l'espace admin des demandes d'inscription
 // (liste, detail, note interne, historique), de bout en bout (HTTP -> garde -> base).
@@ -19,6 +20,8 @@ import { createTestAccount } from '../fixtures/test-accounts';
 // cherche et pagine sans trou ni doublon ; le detail est en LECTURE SEULE (les donnees
 // declarees ne bougent jamais) ; la note interne est la seule ecriture, et elle n'arrive jamais
 // au fondateur ; l'historique ne contient aucun contenu.
+
+type AdminCountsLike = { pending: number; validated: number; refused: number };
 
 const ADMIN_DATABASE_URL = process.env.ADMIN_DATABASE_URL;
 const INTERNAL_REASON = 'MOTIF-INTERNE-CONFIDENTIEL-4d2e';
@@ -303,21 +306,75 @@ describe('API admin des demandes d inscription (e2e, TASK-059)', () => {
     });
 
     it('les compteurs des trois onglets suivent les demandes (badge « A traiter 3 »)', async () => {
-      const before = (await listOf('limit=1')).meta.counts;
-      await seed({ label: 'count-a' });
-      await seed({ label: 'count-b', status: 'COMPLEMENT_REQUESTED' });
-      await seed({ label: 'count-c', status: 'ACTIVE' });
-      await seed({ label: 'count-d', status: 'REFUSED' });
-      const after = (await listOf('limit=1')).meta.counts;
+      // Les compteurs portent sur TOUTE la table. Or d'autres fichiers de tests, lances EN
+      // PARALLELE sur la meme base (la CI n'utilise pas --runInBand), y ajoutent et y retirent
+      // des lignes pendant ce test : un « avant / apres » mesure en dehors d'une transaction
+      // serait faux au hasard du calendrier. On mesure donc dans une transaction REPEATABLE READ :
+      // son instantane est fige a la premiere lecture, et le delta est EXACTEMENT ce qu'on y
+      // insere, quoi que fassent les autres. La transaction est annulee : rien ne subsiste.
+      const insertRequest = (
+        tx: Parameters<Parameters<typeof databaseService.db.transaction>[0]>[0],
+        label: string,
+        columns: ReturnType<typeof sql>,
+        values: ReturnType<typeof sql>,
+      ) => {
+        const userId = uuidv7();
+        return tx
+          .execute(
+            sql`INSERT INTO users (id, name, email) VALUES (${userId}, 'Compteur', ${`count-${label}-${uuidv7()}@example.com`})`,
+          )
+          .then(() =>
+            tx.execute(sql`INSERT INTO registration_requests
+              (id, user_id, first_name, last_name, specialty, structure_name, city, status, ${columns})
+              VALUES (${uuidv7()}, ${userId}, 'A', 'B', 'generaliste', 'C', 'Rabat', ${values})`),
+          );
+      };
+
+      let measured: { before: AdminCountsLike; after: AdminCountsLike } | undefined;
+      await databaseService.db
+        .transaction(
+          async (tx) => {
+            const before = await countRegistrationRequests(tx as never);
+            // 2 « a traiter » (verification + complement), 1 validee, 1 refusee.
+            await insertRequest(tx, 'a', sql`organization_id`, sql`'PENDING_VERIFICATION', NULL`);
+            await insertRequest(
+              tx,
+              'b',
+              sql`complement_requested_info, complement_message`,
+              sql`'COMPLEMENT_REQUESTED', 'info', 'msg'`,
+            );
+            await insertRequest(tx, 'c', sql`organization_id`, sql`'ACTIVE', ${orgId}`);
+            await insertRequest(
+              tx,
+              'd',
+              sql`refusal_internal_reason, refusal_message_to_applicant`,
+              sql`'REFUSED', 'motif', 'message'`,
+            );
+            measured = { before, after: await countRegistrationRequests(tx as never) };
+            tx.rollback();
+          },
+          { isolationLevel: 'repeatable read' },
+        )
+        .catch((error) => {
+          if (!(error instanceof TransactionRollbackError)) throw error;
+        });
+
+      expect(measured).toBeDefined();
+      const { before, after } = measured!;
       expect(after.pending - before.pending).toBe(2);
       expect(after.validated - before.validated).toBe(1);
       expect(after.refused - before.refused).toBe(1);
     });
 
-    it('les compteurs ignorent la recherche et le filtre courants', async () => {
-      const unfiltered = (await listOf('limit=1')).meta.counts;
-      const searched = (await listOf(`filter=refused&q=${TAG}&limit=1`)).meta.counts;
-      expect(searched).toEqual(unfiltered);
+    it('les compteurs ignorent le filtre et la recherche courants', async () => {
+      // Borne basse, robuste a la concurrence : ma propre demande « a traiter » existe pendant tout
+      // le test, donc le compteur « A traiter » vaut au moins 1 -- meme quand le filtre (refusees)
+      // et la recherche (rien ne correspond) vident la liste. S'ils filtraient aussi les
+      // compteurs, celui-ci vaudrait 0.
+      await seed({ label: 'count-independent' });
+      const page = await listOf(`filter=refused&q=introuvable${runId}&limit=1`);
+      expect(page.data).toEqual([]);
+      expect(page.meta.counts.pending).toBeGreaterThanOrEqual(1);
     });
   });
 
