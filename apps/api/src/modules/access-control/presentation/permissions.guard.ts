@@ -13,8 +13,10 @@ import type { AuthProvider } from '../../identity/application/auth-provider.port
 import { DatabaseService } from '../../shared/database/database.service';
 import { hasPermission } from '../infrastructure/permission-check.queries';
 import { AccountAccessGateRegistry } from '../application/account-access-gate';
+import { isPlatformAdmin } from '../infrastructure/platform-admin.queries';
 import { IS_PUBLIC_KEY } from '../../shared/presentation/public.decorator';
 import { REQUIRE_AUTHENTICATION_KEY } from '../../shared/presentation/require-authentication.decorator';
+import { REQUIRE_PLATFORM_ADMIN_KEY } from '../../shared/presentation/require-platform-admin.decorator';
 import {
   PERMISSION_KEY,
   type RequiredPermission,
@@ -62,9 +64,14 @@ export class PermissionsGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
 
-    if (!required && !authenticationOnly) {
+    const platformAdminOnly = this.reflector.getAllAndOverride<boolean>(
+      REQUIRE_PLATFORM_ADMIN_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
+    if (!required && !authenticationOnly && !platformAdminOnly) {
       throw new ForbiddenException(
-        'Endpoint sans @RequirePermission(), @RequireAuthentication() ni @Public() explicite : acces refuse par defaut.',
+        'Endpoint sans @RequirePermission(), @RequireAuthentication(), @RequirePlatformAdmin() ni @Public() explicite : acces refuse par defaut.',
       );
     }
 
@@ -79,6 +86,21 @@ export class PermissionsGuard implements CanActivate {
       throw new UnauthorizedException('Session absente ou invalide.');
     }
     request.authIdentity = { userId: identity.userId };
+
+    // BUILD-004 etape 2 (ADR-0021 D3, TASK-058) : endpoint d'administration de la PLATEFORME.
+    // Reserve aux comptes de platform_admins (lus avec l'identite de la SESSION verifiee,
+    // jamais celle du client). Aucune organisation n'est requise ni consultee, et ce droit
+    // n'ouvre AUCUNE donnee d'organisation : sur un endpoint @RequirePermission, un
+    // administrateur de plateforme reste soumis aux permissions de son organisation comme
+    // n'importe qui. Un endpoint qui cumule les deux decorateurs exige les deux.
+    if (platformAdminOnly) {
+      if (!(await isPlatformAdmin(this.databaseService, identity.userId))) {
+        throw new ForbiddenException('Acces reserve aux administrateurs de la plateforme.');
+      }
+      if (!required) {
+        return true;
+      }
+    }
 
     if (authenticationOnly && !required) {
       return true;

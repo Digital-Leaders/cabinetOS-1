@@ -6,3 +6,4 @@ export type { RequiredPermission } from './presentation/require-permission.decor
 export { CurrentOrganizationId } from './presentation/current-organization.decorator';
 export { RequireAuthentication } from './presentation/require-authentication.decorator';
 export { CurrentUserId } from './presentation/current-user-id.decorator';
+export { RequirePlatformAdmin } from './presentation/require-platform-admin.decorator';
