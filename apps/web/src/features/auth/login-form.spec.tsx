@@ -46,6 +46,12 @@ jest.mock('../../lib/identity-client', () => ({
   fetchMyOrganizations: (...args: unknown[]) => fetchMyOrganizationsMock(...args),
 }));
 
+// Etape 2 (EA-016, TASK-057) : la connexion lit aussi le statut de la demande d'inscription.
+const fetchRegistrationStatusMock = jest.fn();
+jest.mock('../../lib/registration-status-client', () => ({
+  fetchRegistrationStatus: (...args: unknown[]) => fetchRegistrationStatusMock(...args),
+}));
+
 const setOrganizationIdMock = jest.fn();
 jest.mock('../../lib/session', () => ({
   setOrganizationId: (...args: unknown[]) => setOrganizationIdMock(...args),
@@ -67,6 +73,10 @@ describe('LoginForm (comportement)', () => {
     signInWithEmailMock.mockReset();
     fetchMyOrganizationsMock.mockReset();
     setOrganizationIdMock.mockReset();
+    // Par defaut : compte SANS demande (equipe, demos), donc le parcours de l'etape 1 se
+    // deroule exactement comme avant -- tous les tests existants ci-dessous restent inchanges.
+    fetchRegistrationStatusMock.mockReset();
+    fetchRegistrationStatusMock.mockResolvedValue({ status: null });
     signInWithEmailMock.mockResolvedValue({ id: 'u1', name: 'Fatima', email: 'f@cabinet.ma' });
   });
 
@@ -173,5 +183,109 @@ describe('LoginForm (comportement)', () => {
 
     expect(pushMock).toHaveBeenCalledWith('/fr/register');
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+});
+
+// BUILD-004 etape 2, EA-016 / TASK-057 (ADR-0021 D4) : routage apres connexion selon le statut
+// de la demande d'inscription. Seul un compte ACTIVE -- ou sans demande -- entre dans
+// l'application ; les autres atteignent l'ecran de statut correspondant.
+describe('LoginForm -- routage selon le statut de l inscription (TASK-057)', () => {
+  beforeEach(() => {
+    pushMock.mockClear();
+    signInWithEmailMock.mockReset();
+    fetchMyOrganizationsMock.mockReset();
+    setOrganizationIdMock.mockReset();
+    fetchRegistrationStatusMock.mockReset();
+    signInWithEmailMock.mockResolvedValue({ id: 'u1', name: 'Youssef', email: 'y@cabinet.ma' });
+  });
+
+  it.each(['PENDING_VERIFICATION', 'COMPLEMENT_REQUESTED', 'REFUSED'])(
+    '%s : conduit a l ecran de statut -- aucune organisation resolue, aucune erreur affichee',
+    async (status) => {
+      fetchRegistrationStatusMock.mockResolvedValue({ status, maskedEmail: 'y•••••@cabinet.ma' });
+      const user = userEvent.setup();
+      renderForm();
+      await submitValidCredentials(user);
+
+      await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/fr/registration-status'));
+      expect(pushMock).toHaveBeenCalledTimes(1);
+      // Un fondateur n'a pas d'organisation : ce n'est PAS l'erreur « aucune organisation ».
+      expect(fetchMyOrganizationsMock).not.toHaveBeenCalled();
+      expect(setOrganizationIdMock).not.toHaveBeenCalled();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    },
+  );
+
+  it('garde la langue courante vers l ecran de statut', async () => {
+    fetchRegistrationStatusMock.mockResolvedValue({ status: 'PENDING_VERIFICATION' });
+    const user = userEvent.setup();
+    render(<LoginForm locale="ar" />);
+    await user.type(screen.getByLabelText('E-mail'), 'y@cabinet.ma');
+    await user.type(screen.getByLabelText('Mot de passe'), 'password1234');
+    await user.click(screen.getByRole('button', { name: 'Se connecter' }));
+
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/ar/registration-status'));
+  });
+
+  it('ACTIVE : le parcours de l etape 1 se deroule comme avant (ouverture directe)', async () => {
+    fetchRegistrationStatusMock.mockResolvedValue({
+      status: 'ACTIVE',
+      maskedEmail: 'y•••••@cabinet.ma',
+    });
+    fetchMyOrganizationsMock.mockResolvedValue([
+      { organizationId: 'org-1', organizationName: 'Cabinet Bennani', isDefault: false },
+    ]);
+    const user = userEvent.setup();
+    renderForm();
+    await submitValidCredentials(user);
+
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/fr'));
+    expect(setOrganizationIdMock).toHaveBeenCalledWith('org-1');
+  });
+
+  it('compte SANS demande (equipe, demos), plusieurs organisations sans defaut : ecran de choix, comme avant', async () => {
+    fetchRegistrationStatusMock.mockResolvedValue({ status: null });
+    fetchMyOrganizationsMock.mockResolvedValue([
+      { organizationId: 'org-1', organizationName: 'A', isDefault: false },
+      { organizationId: 'org-2', organizationName: 'B', isDefault: false },
+    ]);
+    const user = userEvent.setup();
+    renderForm();
+    await submitValidCredentials(user);
+
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/fr/choose-organization'));
+  });
+
+  it('compte SANS demande et sans organisation : l erreur de l etape 1 est conservee', async () => {
+    fetchRegistrationStatusMock.mockResolvedValue({ status: null });
+    fetchMyOrganizationsMock.mockResolvedValue([]);
+    const user = userEvent.setup();
+    renderForm();
+    await submitValidCredentials(user);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(messages.Login.noOrganization);
+    expect(pushMock).not.toHaveBeenCalled();
+  });
+
+  it('statut illisible : ECHEC OUVERT, le parcours de l etape 1 continue (l API refuse de toute facon les donnees a un non-ACTIVE)', async () => {
+    fetchRegistrationStatusMock.mockRejectedValue(new Error('reseau'));
+    fetchMyOrganizationsMock.mockResolvedValue([
+      { organizationId: 'org-1', organizationName: 'Cabinet Bennani', isDefault: false },
+    ]);
+    const user = userEvent.setup();
+    renderForm();
+    await submitValidCredentials(user);
+
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/fr'));
+  });
+
+  it('mauvais identifiants : le statut n est jamais lu (rien a router sans session)', async () => {
+    signInWithEmailMock.mockRejectedValue(new AuthError('invalid'));
+    const user = userEvent.setup();
+    renderForm();
+    await submitValidCredentials(user);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(messages.Login.invalidCredentials);
+    expect(fetchRegistrationStatusMock).not.toHaveBeenCalled();
   });
 });

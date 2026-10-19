@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { signInWithEmail, AuthError } from '../../lib/auth-client';
 import { fetchMyOrganizations } from '../../lib/identity-client';
+import { fetchRegistrationStatus } from '../../lib/registration-status-client';
+import { needsStatusScreen, statusScreenPath } from '../../lib/registration-access';
 import { resolveOrganization } from '../../lib/resolve-organization';
 import { setOrganizationId } from '../../lib/session';
 import './login-form.css';
@@ -54,6 +56,18 @@ export function LoginForm({ locale }: { locale: string }) {
     setSubmitting(true);
     try {
       await signInWithEmail(trimmedEmail, password);
+
+      // Etape 2 (EA-016, ADR-0021 D4) : seul un compte ACTIVE -- ou sans demande (equipe,
+      // demos) -- entre dans l'application. Un fondateur dont la demande est en
+      // verification, en attente de complement ou refusee est conduit a son ecran de statut
+      // AVANT toute resolution d'organisation (il n'en a aucune : ce n'est pas une erreur).
+      // Echec ouvert : si le statut est illisible, le parcours de l'etape 1 se deroule
+      // comme avant (l'API refuse de toute facon les donnees a un non-ACTIVE, TASK-056).
+      const registration = await fetchRegistrationStatus().catch(() => null);
+      if (needsStatusScreen(registration)) {
+        router.push(statusScreenPath(locale));
+        return;
+      }
 
       const memberships = await fetchMyOrganizations();
       const resolution = resolveOrganization(memberships);

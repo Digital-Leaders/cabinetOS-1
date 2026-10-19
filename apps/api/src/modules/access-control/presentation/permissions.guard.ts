@@ -12,6 +12,7 @@ import { AUTH_PROVIDER } from '../../identity/application/auth-provider.port';
 import type { AuthProvider } from '../../identity/application/auth-provider.port';
 import { DatabaseService } from '../../shared/database/database.service';
 import { hasPermission } from '../infrastructure/permission-check.queries';
+import { AccountAccessGateRegistry } from '../application/account-access-gate';
 import { IS_PUBLIC_KEY } from '../../shared/presentation/public.decorator';
 import { REQUIRE_AUTHENTICATION_KEY } from '../../shared/presentation/require-authentication.decorator';
 import {
@@ -40,6 +41,7 @@ export class PermissionsGuard implements CanActivate {
     private readonly reflector: Reflector,
     @Inject(AUTH_PROVIDER) private readonly authProvider: AuthProvider,
     private readonly databaseService: DatabaseService,
+    private readonly accessGates: AccountAccessGateRegistry,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -80,6 +82,17 @@ export class PermissionsGuard implements CanActivate {
 
     if (authenticationOnly && !required) {
       return true;
+    }
+
+    // BUILD-004 etape 2 (ADR-0021 D4, TASK-056) : acces aux DONNEES metier. Un compte dont la
+    // demande d'inscription n'est pas ACTIVE n'y accede jamais -- avant meme de regarder
+    // l'organisation ou les permissions, donc independamment du RBAC. Place APRES le retour
+    // anticipe ci-dessus : les routes « session seule » (statut de la demande, liste de ses
+    // propres organisations) restent accessibles, c'est ainsi qu'un fondateur atteint son
+    // ecran de statut. Un compte sans demande (equipe, demos) n'est jamais concerne.
+    const denial = await this.accessGates.findDenial(identity.userId);
+    if (denial) {
+      throw new ForbiddenException(denial.message);
     }
 
     const organizationId = request.headers['x-organization-id'];

@@ -3,6 +3,7 @@ import type { ExecutionContext } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Reflector } from '@nestjs/core';
 import { PermissionsGuard } from '../../src/modules/access-control/presentation/permissions.guard';
+import { AccountAccessGateRegistry } from '../../src/modules/access-control/application/account-access-gate';
 import { AUTH_PROVIDER } from '../../src/modules/identity/application/auth-provider.port';
 import { DatabaseService } from '../../src/modules/shared/database/database.service';
 import * as permissionCheck from '../../src/modules/access-control/infrastructure/permission-check.queries';
@@ -33,6 +34,9 @@ describe('PermissionsGuard (unitaire, TASK-016)', () => {
       providers: [
         PermissionsGuard,
         Reflector,
+        // EA-016 (TASK-056) : dependance obligatoire de la garde. Registre vide = aucune
+        // porte d'acces enregistree = comportement de l'etape 1, que ce test verifie.
+        AccountAccessGateRegistry,
         { provide: AUTH_PROVIDER, useValue: authProviderMock },
         { provide: DatabaseService, useValue: {} },
       ],
