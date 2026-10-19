@@ -3,7 +3,7 @@
 // PROBLEME. Pour une requete SQL directe (db.execute), le pilote de base de donnees de Drizzle
 // renvoie les colonnes `timestamp` sous forme de TEXTE BRUT sans fuseau ("2026-10-19
 // 14:21:02.695123"), et non d'une Date. Faire `new Date(texte)` interprete alors ce texte dans le
-// fuseau du SERVEUR : sur une machine reglee a Casablanca (UTC+1), l'instant est decale d'une
+// fuseau du SERVEUR : sur une machine reglee a UTC+1 (le Maroc, la plupart du temps), l'instant est decale d'une
 // heure. Les requetes via l'ORM ne sont pas concernees : Drizzle y lit explicitement ces colonnes
 // comme de l'UTC.
 //
