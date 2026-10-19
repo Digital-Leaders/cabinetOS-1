@@ -221,7 +221,10 @@ export async function deleteAccountWithoutRequest(
  *     sous RLS forcee ; maintenu dans la meme transaction que createMembership, et
  *     rattrape pour les comptes anterieurs a 0017 par la migration 0020) ;
  *   - cree depuis plus de `minAgeMinutes` (une inscription en cours est epargnee).
- * A COMPLETER en TASK-058 : aucune ligne platform_admins (la table n'existe pas encore).
+ *   - aucune ligne platform_admins (TASK-058) : un administrateur de plateforme n'a ni demande
+ *     ni adhesion, il ressemblerait a un orphelin. Meme revoque, sa ligne le protege : elle est
+ *     la trace de son existence. La cle etrangere platform_admins.user_id -> users l'empeche
+ *     de toute facon (23503, traite plus bas).
  *
  * Retourne true si un compte a ete supprime.
  */
@@ -237,6 +240,7 @@ export async function deleteOrphanAccountByEmail(
         AND u.created_at < now() - make_interval(mins => ${minAgeMinutes})
         AND u.organization_memberships = '[]'::jsonb
         AND NOT EXISTS (SELECT 1 FROM registration_requests r WHERE r.user_id = u.id)
+        AND NOT EXISTS (SELECT 1 FROM platform_admins p WHERE p.user_id = u.id)
       RETURNING u.id
     `);
     return result.rows.length > 0;

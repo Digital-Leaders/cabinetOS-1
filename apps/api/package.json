@@ -10,7 +10,8 @@
     "db:check": "drizzle-kit check",
     "build": "tsc --noEmit",
     "test:isolation": "jest --config jest.isolation.config.cjs --runInBand",
-    "account:create": "node -r ts-node/register -r reflect-metadata scripts/create-team-account.ts"
+    "account:create": "node -r ts-node/register -r reflect-metadata scripts/create-team-account.ts",
+    "admin:grant": "node -r ts-node/register -r reflect-metadata scripts/grant-platform-admin.ts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.25",

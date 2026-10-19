@@ -11,6 +11,7 @@ export {
   rolesRelations,
   permissionsRelations,
   rolePermissionsRelations,
+  platformAdmins,
 } from './infrastructure/schema';
 export { findAllRoles, findRoleById } from './infrastructure/role.queries';
 export { findAllPermissions, findPermissionById } from './infrastructure/permission.queries';
