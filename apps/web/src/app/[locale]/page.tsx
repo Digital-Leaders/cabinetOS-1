@@ -1,5 +1,8 @@
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { AppHeader } from '../../features/app-shell/app-header';
+import { findStatusRedirect } from '../../lib/registration-landing';
 import '../../styles/cabinetos-tokens.css';
 
 // Accueil post-connexion -- prouve la boucle complete du commit 1 (connexion ->
@@ -17,6 +20,13 @@ import '../../styles/cabinetos-tokens.css';
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+
+  // Etape 2 (EA-016, TASK-057) : un fondateur dont la demande n'est pas ACTIVE revient avec
+  // une session encore valide -> son ecran de statut, pas un espace vide. Echec ouvert (voir
+  // registration-landing.ts) ; les comptes sans demande ne voient aucune difference.
+  const target = await findStatusRedirect(locale, (await cookies()).toString());
+  if (target) redirect(target);
+
   const t = await getTranslations({ locale, namespace: 'HomePage' });
 
   return (

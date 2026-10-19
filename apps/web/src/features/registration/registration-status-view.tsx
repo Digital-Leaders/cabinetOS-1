@@ -9,6 +9,7 @@ import {
   resendComplementEmail,
   type RegistrationStatusView as StatusData,
 } from '../../lib/registration-status-client';
+import { needsStatusScreen } from '../../lib/registration-access';
 import { getSupportContacts } from './support-contacts';
 import './registration-status-view.css';
 
@@ -49,7 +50,7 @@ export function RegistrationStatusScreen({ locale }: { locale: string }) {
     setState({ kind: 'loading' });
     try {
       const data = await fetchRegistrationStatus();
-      if (data.status === null || data.status === 'ACTIVE') {
+      if (!needsStatusScreen(data)) {
         routerRef.current.replace(`/${locale}`);
         return;
       }

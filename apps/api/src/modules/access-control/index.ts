@@ -1,5 +1,10 @@
 ﻿export { AccessControlModule } from './access-control.module';
 export {
+  AccountAccessGateRegistry,
+  type AccountAccessGate,
+  type AccessDenial,
+} from './application/account-access-gate';
+export {
   roles,
   permissions,
   rolePermissions,

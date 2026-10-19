@@ -125,6 +125,22 @@ export async function findFounderRegistrationView(
   };
 }
 
+/**
+ * Statut de la demande d'un compte, ou null s'il n'en a pas (TASK-056). Une seule colonne,
+ * lue par la porte d'acces a CHAQUE requete protegee : requete par cle unique (user_id),
+ * sans jointure.
+ */
+export async function findRegistrationStatus(
+  db: NodePgDatabase,
+  userId: string,
+): Promise<string | null> {
+  const result = await db.execute(
+    sql`SELECT status FROM registration_requests WHERE user_id = ${userId}`,
+  );
+  const row = result.rows[0] as { status: string } | undefined;
+  return row ? row.status : null;
+}
+
 export interface ResendSlot {
   requestId: string;
   email: string;
