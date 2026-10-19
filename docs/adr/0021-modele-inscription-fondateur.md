@@ -109,6 +109,10 @@ Cela touche le code du module Médecin (BUILD-003) sans changer son comportement
 Conformément au brief (§10.1), aucun test existant du module n'est modifié ; si l'un
 devait l'être, on s'arrête et on en discute.
 
+**Précisé par ADR-0023** : `createMedecinInTx` devient la seule écriture exportée par
+la surface publique du module Médecin (révision de l'invariant de TASK-047), exigeant une
+transaction scopée, garantie par la RLS forcée de `medecins`.
+
 ### D6 — Données de l'organisation et rôle fondateur (EA-018)
 
 - Migration ajoutant `city` et `address` (nullables) à `organizations` (R5).

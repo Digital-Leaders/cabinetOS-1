@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { DatabaseService } from '../../../modules/shared/database/database.service';
 import { medecins, medecinSpecialtyEnum } from './schema';
 import { validateInpe } from '../presentation/inpe-validation';
@@ -44,19 +45,41 @@ export interface CreateMedecinInput {
 
 export type UpdateMedecinInput = Partial<CreateMedecinInput>;
 
+/**
+ * BUILD-004 etape 2, EA-018 / TASK-061 (ADR-0021 D5, ADR-0023) : corps de createMedecin, extrait pour
+ * s'executer DANS UNE TRANSACTION fournie par l'appelant -- la cascade de validation d'une
+ * inscription, qui cree la fiche medecin du fondateur avec l'organisation et l'adhesion, d'un bloc.
+ * Un seul chemin de code (R4 : « pas de chemin parallele ») : normalisation de l'INPE, RLS et
+ * contraintes du module Medecin s'appliquent a l'identique ; createMedecin n'en est que l'enveloppe.
+ *
+ * `tx` DOIT etre une transaction ouverte par withOrganizationScope pour `organizationId`. Ce n'est
+ * pas qu'une convention de type : la RLS FORCEE de medecins (migration 0013) refuse l'insertion avec
+ * une connexion simple (aucune organisation positionnee) comme avec une transaction scopee sur une
+ * AUTRE organisation -- prouve par tests/medecin/create-medecin-in-tx.spec.ts. C'est la SEULE fonction
+ * d'ecriture exportee par la surface publique du module (ADR-0023).
+ */
+export async function createMedecinInTx(
+  tx: NodePgDatabase,
+  organizationId: string,
+  data: CreateMedecinInput,
+) {
+  const normalized = normalizeMedecinInput(data);
+  const [medecin] = await tx
+    .insert(medecins)
+    .values({ ...normalized, organizationId })
+    .returning();
+  return medecin;
+}
+
 export async function createMedecin(
   databaseService: DatabaseService,
   organizationId: string,
   data: CreateMedecinInput,
 ) {
-  return databaseService.withOrganizationScope(organizationId, async (tx) => {
-    const normalized = normalizeMedecinInput(data);
-    const [medecin] = await tx
-      .insert(medecins)
-      .values({ ...normalized, organizationId })
-      .returning();
-    return medecin;
-  });
+  // Comportement INCHANGE : sa propre transaction, scopee a l'organisation.
+  return databaseService.withOrganizationScope(organizationId, (tx) =>
+    createMedecinInTx(tx, organizationId, data),
+  );
 }
 
 export async function findMedecinById(

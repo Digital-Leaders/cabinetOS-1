@@ -7,12 +7,14 @@ export {
 } from './infrastructure/schema';
 export {
   createOrganization,
+  createOrganizationInTx,
   findOrganizationById,
   updateOrganization,
   softDeleteOrganization,
 } from './infrastructure/organization.queries';
 export {
   createMembership,
+  createMembershipInTx,
   findMembershipsByOrganization,
   updateMembershipRole,
   deleteMembership,
