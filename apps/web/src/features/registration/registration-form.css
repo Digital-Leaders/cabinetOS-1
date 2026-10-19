@@ -235,15 +235,6 @@
   color: var(--teald);
 }
 
-.rf-done {
-  text-align: center;
-}
-.rf-body {
-  color: var(--rf-grey);
-  font-size: 14px;
-  margin: 10px 0 0;
-}
-
 @media (max-width: 480px) {
   .rf-shell {
     padding: 18px 12px 40px;

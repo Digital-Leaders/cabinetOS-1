@@ -285,11 +285,6 @@
       "emailAlreadyUsedField": "Cet email est déjà utilisé.",
       "unexpected": "Votre demande n'a pas pu être envoyée. Réessayez dans quelques instants."
     },
-    "done": {
-      "title": "Votre demande est bien reçue",
-      "body": "Notre équipe va vérifier les informations renseignées. Vous n'avez rien à faire pour le moment.",
-      "email": "Un email de confirmation vous a été envoyé."
-    },
     "specialties": {
       "generaliste": "Médecin généraliste",
       "cardiologie": "Cardiologie",
@@ -335,6 +330,40 @@
       "Fès": "Fès",
       "Tanger": "Tanger",
       "Agadir": "Agadir"
+    }
+  },
+  "RegistrationStatus": {
+    "loading": "Chargement…",
+    "loadError": "Impossible d'afficher le statut de votre demande pour le moment.",
+    "retry": "Réessayer",
+    "logout": "Se déconnecter",
+    "emailSentTo": "Email envoyé à",
+    "verification": {
+      "title": "Votre demande est en cours de vérification",
+      "body": "Nous avons bien reçu votre demande d'inscription. Notre équipe vérifie actuellement les informations renseignées.",
+      "nothingToDo": "Vous n'avez rien à faire pour le moment.",
+      "emailNotice": "Vous recevrez un email dès que votre demande aura été traitée."
+    },
+    "complement": {
+      "title": "Un complément d'information est nécessaire",
+      "body": "Nous vous avons envoyé un email précisant l'information nécessaire pour poursuivre la vérification.",
+      "replyStrong": "Répondez directement à cet email",
+      "replyRest": "avec l'information demandée.",
+      "resend": "Renvoyer l'email",
+      "resending": "Envoi…",
+      "resent": "✓ Email renvoyé",
+      "resendFailed": "L'email n'a pas pu être renvoyé. Réessayez dans quelques instants.",
+      "resendUnexpected": "Une erreur est survenue. Réessayez dans quelques instants.",
+      "spam": "Vous ne l'avez pas reçu ? Vérifiez également vos courriers indésirables."
+    },
+    "refused": {
+      "title": "Votre demande n'a pas été retenue",
+      "contact": "Pour toute question, n'hésitez pas à nous contacter."
+    },
+    "help": {
+      "title": "Besoin d'aide ?",
+      "whatsapp": "WhatsApp",
+      "phone": "Nous appeler"
     }
   }
 }
