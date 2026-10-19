@@ -18,9 +18,8 @@ import './registration-form.css';
 // serveur refuserait de toute facon (TASK-052, qui revalide tout). Aucun format n'est
 // impose a l'INPE ni au numero d'Ordre.
 //
-// Apres l'envoi : la session du fondateur est ouverte par la reponse du serveur. En
-// attendant les ecrans de statut (TASK-055), une confirmation s'affiche dans la carte ;
-// TASK-055 remplacera ce bloc par la navigation vers l'ecran « en verification ».
+// Apres l'envoi : la session du fondateur est ouverte par la reponse du serveur ; il est
+// conduit a l'ecran de statut (TASK-055), qui affiche la variante de son statut reel.
 
 type FieldName =
   'firstName' | 'lastName' | 'email' | 'password' | 'specialty' | 'structureName' | 'city';
@@ -47,7 +46,6 @@ export function RegistrationForm({ locale }: { locale: string }) {
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   function update(name: keyof typeof values, value: string) {
     setValues((current) => ({ ...current, [name]: value }));
@@ -100,7 +98,7 @@ export function RegistrationForm({ locale }: { locale: string }) {
         ...(values.numeroOrdre.trim() ? { numeroOrdre: values.numeroOrdre.trim() } : {}),
         ...(values.address.trim() ? { address: values.address.trim() } : {}),
       });
-      setSubmitted(true);
+      router.push(`/${locale}/registration-status`);
     } catch (error) {
       const kind = error instanceof RegistrationError ? error.kind : 'UNEXPECTED';
       if (kind === 'EMAIL_ALREADY_USED') {
@@ -114,19 +112,6 @@ export function RegistrationForm({ locale }: { locale: string }) {
     } finally {
       setSubmitting(false);
     }
-  }
-
-  if (submitted) {
-    return (
-      <div className="rf-shell">
-        <div className="rf-card rf-done" role="status">
-          <Brand />
-          <h1>{t('done.title')}</h1>
-          <p className="rf-body">{t('done.body')}</p>
-          <p className="rf-body">{t('done.email')}</p>
-        </div>
-      </div>
-    );
   }
 
   function fieldClass(name: FieldName) {

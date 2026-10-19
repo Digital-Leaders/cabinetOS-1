@@ -86,4 +86,14 @@ describe('i18n locales (e2e)', () => {
     expect(res.status).toBeLessThan(400);
     expect(res.headers.get('location')).toContain('/fr/login');
   });
+
+  // BUILD-004 etape 2, TASK-055 : l'ecran de statut exige une session (le fondateur vient
+  // de s'inscrire ou de se connecter) -- sans session, retour a la connexion.
+  it('ecran de statut sans session : renvoi vers la connexion', async () => {
+    const res = await fetch(`${BASE_URL}/fr/registration-status`, { redirect: 'manual' });
+
+    expect(res.status).toBeGreaterThanOrEqual(300);
+    expect(res.status).toBeLessThan(400);
+    expect(res.headers.get('location')).toContain('/fr/login');
+  });
 });

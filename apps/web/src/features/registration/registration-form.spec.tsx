@@ -157,15 +157,14 @@ describe('RegistrationForm (TASK-053)', () => {
     );
   });
 
-  it('apres envoi : confirmation affichee, le formulaire disparait', async () => {
+  it('apres envoi : conduit a l ecran de statut de la langue courante (TASK-055)', async () => {
     submitRegistrationMock.mockResolvedValue({ id: 'r3', status: 'PENDING_VERIFICATION' });
     const user = userEvent.setup();
-    render(<RegistrationForm locale="fr" />);
+    render(<RegistrationForm locale="ar" />);
     await fillRequired(user);
     await submit(user);
 
-    expect(await screen.findByRole('status')).toHaveTextContent(fr.done.title);
-    expect(screen.queryByRole('button', { name: fr.submit })).not.toBeInTheDocument();
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/ar/registration-status'));
   });
 
   it('email deja utilise : message neutre et champ email signale, rien d autre', async () => {
@@ -213,7 +212,7 @@ describe('RegistrationForm (TASK-053)', () => {
 
     expect(screen.getByRole('button', { name: fr.submitting })).toBeDisabled();
     resolve({ id: 'r4', status: 'PENDING_VERIFICATION' });
-    await screen.findByRole('status');
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/fr/registration-status'));
   });
 
   it('« Se connecter » ramene a l ecran de connexion de la langue courante', async () => {

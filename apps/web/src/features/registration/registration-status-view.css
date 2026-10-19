@@ -1,0 +1,225 @@
+/*
+ * Ecran de statut du fondateur -- port de la maquette statut-attente.html
+ * (BUILD-004 etape 2, TASK-055). Memes couleurs que la maquette.
+ * Contraste AA : gris de texte de la maquette (#566169 : 6,35 ; #647079 : 5,08), vert
+ * #1E7A46 sur #E7F3EC (4,69), sarcelle fonce #0A4C54 sur blanc (9,66).
+ */
+
+.rs-shell {
+  --rs-grey: #566169;
+  --rs-hint: #647079;
+  --rs-amber: #b26b00;
+  --rs-amberbg: #fbf3e4;
+  --rs-green: #1e7a46;
+  --rs-greenbg: #e7f3ec;
+  --rs-greenbd: #b8dcc6;
+  --rs-errtext: #8e2a20;
+
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  background: var(--wash);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+.rs-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  box-shadow:
+    0 1px 2px rgba(26, 43, 52, 0.04),
+    0 10px 30px rgba(26, 43, 52, 0.08);
+  padding: 32px 30px 26px;
+  text-align: center;
+}
+
+.rs-brand {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1px;
+  margin-bottom: 24px;
+  direction: ltr;
+}
+.rs-brand .b1,
+.rs-brand .b2 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+.rs-brand .b1 {
+  color: var(--ink);
+}
+.rs-brand .b2 {
+  color: var(--teal);
+}
+
+.rs-icn {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 24px;
+}
+.rs-icn-verif {
+  background: var(--wash2);
+  color: var(--teald);
+}
+.rs-icn-compl {
+  background: var(--rs-amberbg);
+  color: var(--rs-amber);
+}
+
+.rs-card h1 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  margin: 0 0 12px;
+}
+.rs-body {
+  color: var(--rs-grey);
+  font-size: 14px;
+  margin: 0 0 10px;
+  line-height: 1.55;
+}
+.rs-body strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.rs-message {
+  white-space: pre-line;
+  color: var(--ink);
+}
+
+.rs-nothing {
+  background: var(--rs-greenbg);
+  color: var(--rs-green);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 9px;
+  padding: 10px 13px;
+  margin: 14px 0 12px;
+}
+
+.rs-emailto {
+  font-size: 12.5px;
+  color: var(--rs-hint);
+  margin: 16px 0 2px;
+}
+.rs-emailto b {
+  color: var(--rs-grey);
+  font-weight: 600;
+}
+
+.rs-btn {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  border-radius: 9px;
+  padding: 11px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  margin-top: 16px;
+  transition: 0.12s;
+}
+.rs-btn-ghost {
+  background: none;
+  color: var(--teald);
+  border-color: var(--rule);
+}
+.rs-btn-ghost:hover:not(:disabled) {
+  border-color: var(--teal);
+  background: var(--wash);
+}
+.rs-btn:disabled {
+  cursor: default;
+}
+.rs-btn-done {
+  color: var(--rs-green);
+  border-color: var(--rs-greenbd);
+}
+
+.rs-error {
+  color: var(--rs-errtext);
+  font-size: 12.5px;
+  margin: 10px 0 0;
+}
+.rs-spam {
+  font-size: 12px;
+  color: var(--rs-hint);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.rs-help {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--wash);
+}
+.rs-help-lab {
+  font-size: 12px;
+  color: var(--rs-grey);
+  margin-bottom: 9px;
+  font-weight: 600;
+}
+.rs-contacts {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.rs-contacts a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teald);
+  text-decoration: none;
+  background: var(--wash);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+.rs-contacts a:hover {
+  border-color: var(--teal);
+  background: var(--wash2);
+}
+
+.rs-logout {
+  margin-top: 18px;
+}
+.rs-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--rs-hint);
+  cursor: pointer;
+}
+.rs-link:hover {
+  color: var(--rs-grey);
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .rs-card {
+    padding: 26px 20px 22px;
+  }
+  .rs-contacts {
+    flex-direction: column;
+  }
+  .rs-contacts a {
+    justify-content: center;
+  }
+}
