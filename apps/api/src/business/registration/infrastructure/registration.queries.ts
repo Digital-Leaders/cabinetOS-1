@@ -3,6 +3,7 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { DatabaseService } from '../../../modules/shared';
 import { registrationRequests, registrationEvents } from './schema';
 import type { RegistrationEventAction } from './schema';
+import { fromDbTimestampOrNull, fromDbTimestamp } from './db-timestamps';
 
 // TASK-052 (BUILD-004 etape 2, EA-014) : acces aux tables d'inscription (ADR-0021).
 //
@@ -121,7 +122,7 @@ export async function findFounderRegistrationView(
     status: row.status,
     email: row.email,
     refusalMessageToApplicant: row.refusal_message_to_applicant,
-    lastEmailResentAt: row.last_email_resent_at,
+    lastEmailResentAt: fromDbTimestampOrNull(row.last_email_resent_at),
   };
 }
 
@@ -192,7 +193,7 @@ export async function claimComplementResendSlot(
     firstName: row.first_name,
     requestedInfo: row.complement_requested_info,
     message: row.complement_message,
-    resentAt: row.last_email_resent_at,
+    resentAt: fromDbTimestamp(row.last_email_resent_at),
   };
 }
 
