@@ -4,7 +4,17 @@
 
 describe('fuseau du processus de test', () => {
   it('n est pas UTC, pour que les defauts de fuseau se voient', () => {
-    // Janvier : hors heure d'ete et hors Ramadan 2026 (18 fev.), donc le decalage est stable.
     expect(new Date('2026-01-15T12:00:00Z').getTimezoneOffset()).not.toBe(0);
+  });
+
+  it('y est DE FACON CONSTANTE : meme decalage en hiver, en ete et en octobre (zone a decalage fixe)', () => {
+    // Un fuseau nomme comme Africa/Casablanca changerait selon la version de Node (voir
+    // jest.global-setup.js) : ici, aucune exception ne doit exister, sinon un test de decalage
+    // reussirait sur une version de Node et echouerait sur une autre.
+    const offsets = ['2026-01-15', '2026-07-15', '2026-10-19', '2027-03-01'].map((day) =>
+      new Date(`${day}T12:00:00Z`).getTimezoneOffset(),
+    );
+    expect(new Set(offsets).size).toBe(1);
+    expect(offsets[0]).not.toBe(0);
   });
 });
