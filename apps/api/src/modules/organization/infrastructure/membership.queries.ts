@@ -1,4 +1,5 @@
 ﻿import { and, eq } from 'drizzle-orm';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { DatabaseService } from '../../shared/database/database.service';
 import { appendOrganizationMembership, removeOrganizationMembership } from '../../identity';
 import { memberships, organizations } from './schema';
@@ -13,25 +14,43 @@ import { memberships, organizations } from './schema';
 // appendOrganizationMembership/removeOrganizationMembership n ont pas besoin
 // d un scope d organisation -- elles acceptent directement ce tx.
 
+/**
+ * BUILD-004 etape 2, EA-018 / TASK-061 (ADR-0021 D5) : corps de createMembership, extrait pour
+ * s'executer DANS UNE TRANSACTION fournie par l'appelant (la cascade de validation d'une
+ * inscription). Insere l'adhesion ET synchronise le cache users.organization_memberships
+ * (ADR-0019) dans CETTE transaction : si l'appelant l'annule, l'un et l'autre disparaissent.
+ *
+ * `tx` DOIT etre une transaction ouverte par withOrganizationScope pour `organizationId` : la RLS
+ * de memberships refuse l'insertion dans tout autre cas.
+ */
+export async function createMembershipInTx(
+  tx: NodePgDatabase,
+  organizationId: string,
+  data: { userId: string; roleId: string },
+) {
+  const [created] = await tx
+    .insert(memberships)
+    .values({ ...data, organizationId })
+    .returning();
+
+  const [org] = await tx
+    .select({ name: organizations.name })
+    .from(organizations)
+    .where(eq(organizations.id, organizationId));
+  await appendOrganizationMembership(tx, data.userId, organizationId, org?.name ?? '');
+
+  return created;
+}
+
 export async function createMembership(
   databaseService: DatabaseService,
   organizationId: string,
   data: { userId: string; roleId: string },
 ) {
-  return databaseService.withOrganizationScope(organizationId, async (tx) => {
-    const [created] = await tx
-      .insert(memberships)
-      .values({ ...data, organizationId })
-      .returning();
-
-    const [org] = await tx
-      .select({ name: organizations.name })
-      .from(organizations)
-      .where(eq(organizations.id, organizationId));
-    await appendOrganizationMembership(tx, data.userId, organizationId, org?.name ?? '');
-
-    return created;
-  });
+  // Comportement INCHANGE : sa propre transaction, scopee a l'organisation.
+  return databaseService.withOrganizationScope(organizationId, (tx) =>
+    createMembershipInTx(tx, organizationId, data),
+  );
 }
 
 export async function findMembershipsByOrganization(
