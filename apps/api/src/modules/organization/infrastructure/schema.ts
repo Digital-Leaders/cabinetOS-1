@@ -10,6 +10,11 @@ export const organizations = pgTable('organizations', {
     .$defaultFn(() => uuidv7()),
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
+  // BUILD-004 etape 2, EA-018 / TASK-062 (brief R5, migration 0024) : renseignees par la cascade de
+  // validation d'une inscription, depuis la demande du fondateur. NULLABLES : les organisations
+  // existantes (equipe, demos) n'en ont pas.
+  city: text('city'),
+  address: text('address'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   deletedAt: timestamp('deleted_at'),
