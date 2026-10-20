@@ -1,5 +1,21 @@
-import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  ValidateIf,
+} from 'class-validator';
+import {
+  COMPLEMENT_INFO_TYPES,
+  MAX_COMPLEMENT_MESSAGE_LENGTH,
+  MAX_OTHER_INFO_LENGTH,
+  type ComplementInfoType,
+} from '../domain/complement-rules';
 import {
   ADMIN_FILTERS,
   MAX_PAGE_SIZE,
@@ -44,4 +60,29 @@ export class UpdateInternalNoteDto {
   @IsString()
   @MaxLength(INTERNAL_NOTE_MAX_LENGTH)
   internalNote?: string | null;
+}
+
+const trim = ({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value);
+
+/**
+ * Demande de complement (TASK-064, brief R7). Le TYPE d'information est un choix ferme ; « autre » exige sa
+ * precision. Le message est celui que l'administrateur a edite : il est envoye tel quel et conserve (ADR-0022).
+ */
+export class RequestComplementDto {
+  @IsIn(COMPLEMENT_INFO_TYPES)
+  infoType!: ComplementInfoType;
+
+  // Exigee seulement pour « autre » ; ignoree pour les deux types predefinis (le libelle est fixe).
+  @ValidateIf((o: RequestComplementDto) => o.infoType === 'other')
+  @Transform(trim)
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(MAX_OTHER_INFO_LENGTH)
+  otherInfo?: string;
+
+  @Transform(trim)
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(MAX_COMPLEMENT_MESSAGE_LENGTH)
+  message!: string;
 }
