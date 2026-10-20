@@ -41,6 +41,8 @@ describe('Configuration email', () => {
         NODE_ENV: 'production',
         EMAIL_PROVIDER: 'brevo',
         BREVO_API_KEY: 'cle-de-test-0123456789',
+        // TASK-063 : l'adresse publique du site est desormais obligatoire en production.
+        APP_BASE_URL: 'https://app.portesante.ma',
       }).error,
     ).toBeUndefined();
   });

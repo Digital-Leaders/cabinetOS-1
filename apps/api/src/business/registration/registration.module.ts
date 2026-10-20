@@ -9,6 +9,7 @@ import { RegistrationAccessGate } from './application/registration-access-gate';
 import { RegistrationStatusService } from './application/registration-status.service';
 import { RegistrationStatusController } from './presentation/registration-status.controller';
 import { AdminRegistrationService } from './application/admin-registration.service';
+import { RegistrationValidationService } from './application/registration-validation.service';
 import { AdminRegistrationController } from './presentation/admin-registration.controller';
 
 // TASK-052 (BUILD-004 etape 2, EA-014). Module Business : la cascade (EA-018) appellera
@@ -21,6 +22,7 @@ import { AdminRegistrationController } from './presentation/admin-registration.c
     RegistrationStatusService,
     RegistrationAccessGate,
     AdminRegistrationService,
+    RegistrationValidationService,
   ],
 })
 export class RegistrationModule {}
