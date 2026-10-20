@@ -12,7 +12,12 @@ import {
 import { CurrentUserId, RequirePlatformAdmin } from '../../../modules/shared';
 import { AdminRegistrationService } from '../application/admin-registration.service';
 import { RegistrationValidationService } from '../application/registration-validation.service';
-import { ListRegistrationRequestsQueryDto, UpdateInternalNoteDto } from './admin-registration.dto';
+import { RegistrationComplementService } from '../application/registration-complement.service';
+import {
+  ListRegistrationRequestsQueryDto,
+  RequestComplementDto,
+  UpdateInternalNoteDto,
+} from './admin-registration.dto';
 
 // BUILD-004 etape 2, EA-017 / TASK-059 : espace admin des demandes d'inscription, en lecture
 // (brief §5.3 et §5.4). Reserve a l'equipe CabinetOS.
@@ -27,6 +32,8 @@ import { ListRegistrationRequestsQueryDto, UpdateInternalNoteDto } from './admin
 //   PUT  /admin/registration-requests/:id/internal-note   la note interne
 //   POST /admin/registration-requests/:id/validate        VALIDER : cascade atomique + email decouple (EA-018)
 //   POST /admin/registration-requests/:id/resend-activation-email   renvoi de l'email d'activation (R6)
+//   POST /admin/registration-requests/:id/request-complement        DEMANDER UN COMPLEMENT (EA-018, R7)
+//   POST /admin/registration-requests/:id/resend-complement-email   renvoi du complement, a l'identique
 
 @Controller('admin/registration-requests')
 @RequirePlatformAdmin()
@@ -34,6 +41,7 @@ export class AdminRegistrationController {
   constructor(
     private readonly adminService: AdminRegistrationService,
     private readonly validationService: RegistrationValidationService,
+    private readonly complementService: RegistrationComplementService,
   ) {}
 
   @Get()
@@ -77,5 +85,34 @@ export class AdminRegistrationController {
     @CurrentUserId() adminUserId: string,
   ) {
     return { data: await this.validationService.resendActivationEmail(id, adminUserId), meta: {} };
+  }
+
+  /**
+   * DEMANDER UN COMPLEMENT (brief R7). 200 { id, status: 'COMPLEMENT_REQUESTED', complementEmail: { sent } } --
+   * `sent: false` si l'email n'est pas parti : la demande de complement reste ACQUISE, l'echec est dans
+   * l'historique et l'envoi peut etre relance. 400 type ou message invalide ; 404 demande inconnue ; 409
+   * demande deja traitee (validee ou refusee) ; 500 si l'enregistrement echoue : rien n'a alors ete modifie.
+   */
+  @Post(':id/request-complement')
+  @HttpCode(200)
+  async requestComplement(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() body: RequestComplementDto,
+    @CurrentUserId() adminUserId: string,
+  ) {
+    return {
+      data: await this.complementService.requestComplement(id, adminUserId, body),
+      meta: {},
+    };
+  }
+
+  /** 200 { sent } ; 404 inconnue ; 409 demande pas en attente de complement ; 429 si un renvoi date de moins de 60 s. */
+  @Post(':id/resend-complement-email')
+  @HttpCode(200)
+  async resendComplementEmail(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @CurrentUserId() adminUserId: string,
+  ) {
+    return { data: await this.complementService.resendComplementEmail(id, adminUserId), meta: {} };
   }
 }

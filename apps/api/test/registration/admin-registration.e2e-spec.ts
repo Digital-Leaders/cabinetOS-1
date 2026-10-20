@@ -475,8 +475,16 @@ describe('API admin des demandes d inscription (e2e, TASK-059)', () => {
     });
 
     it('« % » et « _ » sont des caracteres ordinaires, jamais des jokers', async () => {
-      expect((await listOf(`q=${encodeURIComponent('%')}&filter=pending`)).data).toEqual([]);
-      expect((await listOf(`q=${encodeURIComponent('_')}&filter=pending`)).data).toEqual([]);
+      // Les recherches sont BORNEES a nos propres demandes (marqueur TAG) : d'autres fichiers de tests,
+      // lances en parallele sur la meme base, creent des demandes dont le nom peut contenir « _ » ou « % »
+      // (ex. un libelle de test), ce que ce test ne doit pas pretendre exclure dans TOUTE la base. Il garde
+      // sa force : si « % » ou « _ » etaient des jokers, la recherche trouverait toutes NOS demandes.
+      for (const literal of ['%', '_']) {
+        expect(
+          (await listOf(`q=${encodeURIComponent(`${TAG} ${literal}`)}&limit=50&filter=pending`))
+            .data,
+        ).toEqual([]);
+      }
       expect((await listOf(`q=${encodeURIComponent(`${TAG} %`)}&limit=50`)).data).toEqual([]);
     });
 

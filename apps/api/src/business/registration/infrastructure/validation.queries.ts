@@ -147,3 +147,122 @@ export async function findRequestStatusById(
   const row = result.rows[0] as { status: string } | undefined;
   return row ? row.status : null;
 }
+
+// ---------------------------------------------------------------------------------------
+// TASK-064 (EA-018, brief R7) : demande de COMPLEMENT.
+
+/** Statuts depuis lesquels un complement peut etre (re)demande. Depuis « complement demande » : une
+ * nouvelle demande ECRASE la precedente (ADR-0022 : « ecrasees a chaque nouvelle demande »). */
+export const COMPLEMENT_REQUESTABLE_STATUSES = [
+  'PENDING_VERIFICATION',
+  'COMPLEMENT_REQUESTED',
+] as const;
+
+export interface RequestToAskComplement {
+  id: string;
+  status: string;
+  email: string;
+  firstName: string;
+}
+
+/** Lit la demande ET la verrouille (FOR UPDATE) : des actions simultanees sur la meme demande se serialisent. */
+export async function lockRequestForComplement(
+  tx: NodePgDatabase,
+  id: string,
+): Promise<RequestToAskComplement | null> {
+  const result = await tx.execute(sql`
+    SELECT r.id, r.status, r.first_name, u.email
+    FROM registration_requests r
+    JOIN users u ON u.id = r.user_id
+    WHERE r.id = ${id}
+    FOR UPDATE OF r
+  `);
+  const row = result.rows[0] as
+    { id: string; status: string; first_name: string; email: string } | undefined;
+  return row
+    ? { id: row.id, status: row.status, firstName: row.first_name, email: row.email }
+    : null;
+}
+
+/**
+ * La demande passe a COMPLEMENT_REQUESTED et conserve le message sortant, TEL QU'ENVOYE (ADR-0022), pour
+ * qu'il puisse etre renvoye a l'identique. Conditionnee au statut : false si la demande n'est plus ouverte.
+ */
+export async function markComplementRequested(
+  tx: NodePgDatabase,
+  id: string,
+  requestedInfo: string,
+  message: string,
+): Promise<boolean> {
+  const result = await tx.execute(sql`
+    UPDATE registration_requests
+    SET status = 'COMPLEMENT_REQUESTED',
+        complement_requested_info = ${requestedInfo},
+        complement_message = ${message},
+        updated_at = now()
+    WHERE id = ${id} AND status IN ('PENDING_VERIFICATION', 'COMPLEMENT_REQUESTED')
+    RETURNING id
+  `);
+  return result.rows.length > 0;
+}
+
+/** Trace de l'action (date, action, administrateur) -- jamais le contenu de l'echange (R7). */
+export async function insertComplementRequestedEvent(
+  tx: NodePgDatabase,
+  registrationRequestId: string,
+  actorUserId: string,
+): Promise<void> {
+  await tx.execute(sql`
+    INSERT INTO registration_events (id, registration_request_id, action, actor_user_id)
+    VALUES (gen_random_uuid(), ${registrationRequestId}, 'COMPLEMENT_REQUESTED', ${actorUserId})
+  `);
+}
+
+export interface ComplementResend {
+  requestId: string;
+  email: string;
+  firstName: string;
+  requestedInfo: string;
+  message: string;
+}
+
+/**
+ * Renvoi du complement PAR L'ADMINISTRATEUR (brief §6 : « renvoyer la demande sans la recreer »). Meme
+ * principe que le renvoi du fondateur (TASK-054) : verification du delai et pose de l'horodatage en UNE
+ * instruction, donc atomiques ; le message est relu TEL QU'ENVOYE, jamais reconstruit.
+ */
+export async function claimComplementResendSlotByRequestId(
+  db: NodePgDatabase,
+  id: string,
+  windowSeconds: number,
+): Promise<ComplementResend | null> {
+  const result = await db.execute(sql`
+    UPDATE registration_requests r
+    SET last_email_resent_at = now()
+    FROM users u
+    WHERE r.id = ${id}
+      AND u.id = r.user_id
+      AND r.status = 'COMPLEMENT_REQUESTED'
+      AND (r.last_email_resent_at IS NULL
+           OR r.last_email_resent_at <= now() - make_interval(secs => ${windowSeconds}))
+    RETURNING r.id, u.email, r.first_name, r.complement_requested_info, r.complement_message
+  `);
+  const row = result.rows[0] as
+    | {
+        id: string;
+        email: string;
+        first_name: string;
+        complement_requested_info: string;
+        complement_message: string;
+      }
+    | undefined;
+  return row
+    ? {
+        requestId: row.id,
+        email: row.email,
+        firstName: row.first_name,
+        requestedInfo: row.complement_requested_info,
+        message: row.complement_message,
+      }
+    : null;
+}
