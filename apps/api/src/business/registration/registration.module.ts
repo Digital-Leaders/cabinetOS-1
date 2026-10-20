@@ -11,6 +11,7 @@ import { RegistrationStatusController } from './presentation/registration-status
 import { AdminRegistrationService } from './application/admin-registration.service';
 import { RegistrationValidationService } from './application/registration-validation.service';
 import { RegistrationComplementService } from './application/registration-complement.service';
+import { RegistrationRefusalService } from './application/registration-refusal.service';
 import { AdminRegistrationController } from './presentation/admin-registration.controller';
 
 // TASK-052 (BUILD-004 etape 2, EA-014). Module Business : la cascade (EA-018) appellera
@@ -25,6 +26,7 @@ import { AdminRegistrationController } from './presentation/admin-registration.c
     AdminRegistrationService,
     RegistrationValidationService,
     RegistrationComplementService,
+    RegistrationRefusalService,
   ],
 })
 export class RegistrationModule {}

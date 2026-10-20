@@ -1,5 +1,7 @@
 import { Transform, Type } from 'class-transformer';
 import {
+  Equals,
+  IsBoolean,
   IsIn,
   IsInt,
   IsNotEmpty,
@@ -16,6 +18,7 @@ import {
   MAX_OTHER_INFO_LENGTH,
   type ComplementInfoType,
 } from '../domain/complement-rules';
+import { MAX_REFUSAL_TEXT_LENGTH } from '../domain/refusal-rules';
 import {
   ADMIN_FILTERS,
   MAX_PAGE_SIZE,
@@ -85,4 +88,31 @@ export class RequestComplementDto {
   @IsNotEmpty()
   @MaxLength(MAX_COMPLEMENT_MESSAGE_LENGTH)
   message!: string;
+}
+
+/**
+ * Refus (TASK-065, brief R8) : DEUX champs strictement separes, plus une confirmation explicite.
+ *
+ * `confirmed` doit etre le booleen `true` : un refus est DEFINITIF en V1 (ADR-0021 P2) et envoie un email au
+ * demandeur ; l'ecran affiche une fenetre de confirmation (TASK-066), et le serveur l'EXIGE aussi, pour
+ * qu'un appel sans confirmation (clic accidentel, script) n'ait aucun effet.
+ */
+export class RefuseRequestDto {
+  // Motif INTERNE : obligatoire, jamais communique au demandeur.
+  @Transform(trim)
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(MAX_REFUSAL_TEXT_LENGTH)
+  internalReason!: string;
+
+  // Message AU DEMANDEUR : obligatoire, distinct du motif.
+  @Transform(trim)
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(MAX_REFUSAL_TEXT_LENGTH)
+  messageToApplicant!: string;
+
+  @IsBoolean()
+  @Equals(true, { message: 'La confirmation du refus est obligatoire.' })
+  confirmed!: boolean;
 }
