@@ -52,7 +52,10 @@ export async function insertRegistrationRequest(
 }
 
 type RegistrationEmailTemplate =
-  'registration-confirmation' | 'verification-complement' | 'account-activation';
+  | 'registration-confirmation'
+  | 'verification-complement'
+  | 'account-activation'
+  | 'registration-refusal';
 
 /** Inscrit le resultat d'un envoi d'email dans l'historique (R6 : jamais le contenu). */
 export async function recordEmailEvent(

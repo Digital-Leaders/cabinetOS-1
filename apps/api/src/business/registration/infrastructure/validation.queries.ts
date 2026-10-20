@@ -158,18 +158,21 @@ export const COMPLEMENT_REQUESTABLE_STATUSES = [
   'COMPLEMENT_REQUESTED',
 ] as const;
 
-export interface RequestToAskComplement {
+export interface RequestToAct {
   id: string;
   status: string;
   email: string;
   firstName: string;
 }
 
-/** Lit la demande ET la verrouille (FOR UPDATE) : des actions simultanees sur la meme demande se serialisent. */
-export async function lockRequestForComplement(
+/**
+ * Lit la demande ET la verrouille (FOR UPDATE) : des actions simultanees sur la meme demande se serialisent.
+ * Sert aux actions de l'administrateur qui ne creent rien (complement, refus).
+ */
+export async function lockRequestForAction(
   tx: NodePgDatabase,
   id: string,
-): Promise<RequestToAskComplement | null> {
+): Promise<RequestToAct | null> {
   const result = await tx.execute(sql`
     SELECT r.id, r.status, r.first_name, u.email
     FROM registration_requests r
@@ -263,6 +266,90 @@ export async function claimComplementResendSlotByRequestId(
         firstName: row.first_name,
         requestedInfo: row.complement_requested_info,
         message: row.complement_message,
+      }
+    : null;
+}
+
+// ---------------------------------------------------------------------------------------
+// TASK-065 (EA-018, brief R8) : REFUS.
+
+/**
+ * La demande passe a REFUSED avec ses DEUX champs, strictement separes (R8) : le motif interne (jamais
+ * communique) et le message au demandeur. Efface le dernier message de complement (ADR-0022 : les contraintes
+ * de la base l'exigent des qu'une demande est close). Conditionnee au statut : false si elle n'est plus ouverte.
+ */
+export async function markRequestRefused(
+  tx: NodePgDatabase,
+  id: string,
+  internalReason: string,
+  messageToApplicant: string,
+): Promise<boolean> {
+  const result = await tx.execute(sql`
+    UPDATE registration_requests
+    SET status = 'REFUSED',
+        refusal_internal_reason = ${internalReason},
+        refusal_message_to_applicant = ${messageToApplicant},
+        complement_requested_info = NULL,
+        complement_message = NULL,
+        updated_at = now()
+    WHERE id = ${id} AND status IN ('PENDING_VERIFICATION', 'COMPLEMENT_REQUESTED')
+    RETURNING id
+  `);
+  return result.rows.length > 0;
+}
+
+/** Trace de l'action (date, action, administrateur) : jamais le motif ni le message. */
+export async function insertRefusedEvent(
+  tx: NodePgDatabase,
+  registrationRequestId: string,
+  actorUserId: string,
+): Promise<void> {
+  await tx.execute(sql`
+    INSERT INTO registration_events (id, registration_request_id, action, actor_user_id)
+    VALUES (gen_random_uuid(), ${registrationRequestId}, 'REFUSED', ${actorUserId})
+  `);
+}
+
+export interface RefusalResend {
+  requestId: string;
+  email: string;
+  firstName: string;
+  messageToApplicant: string;
+}
+
+/**
+ * Renvoi de l'email de refus PAR L'ADMINISTRATEUR : le seul moyen de recuperer un email perdu, le demandeur
+ * n'ayant aucun ecran pour le redemander. Reservation du creneau en UNE instruction (atomique).
+ *
+ * INVARIANT R8 : cette requete ne lit JAMAIS le motif interne -- elle ne selectionne que le message AU
+ * DEMANDEUR. Le motif interne ne peut donc pas atteindre le code qui envoie l'email. (Un test echoue si
+ * cette fonction y fait reference.)
+ */
+export async function claimRefusalResendSlot(
+  db: NodePgDatabase,
+  id: string,
+  windowSeconds: number,
+): Promise<RefusalResend | null> {
+  const result = await db.execute(sql`
+    UPDATE registration_requests r
+    SET last_email_resent_at = now()
+    FROM users u
+    WHERE r.id = ${id}
+      AND u.id = r.user_id
+      AND r.status = 'REFUSED'
+      AND (r.last_email_resent_at IS NULL
+           OR r.last_email_resent_at <= now() - make_interval(secs => ${windowSeconds}))
+    RETURNING r.id, u.email, r.first_name, r.refusal_message_to_applicant
+  `);
+  const row = result.rows[0] as
+    | { id: string; email: string; first_name: string; refusal_message_to_applicant: string }
+    | undefined;
+  return row
+    ? {
+        requestId: row.id,
+        email: row.email,
+        firstName: row.first_name,
+        messageToApplicant: row.refusal_message_to_applicant,
       }
     : null;
 }

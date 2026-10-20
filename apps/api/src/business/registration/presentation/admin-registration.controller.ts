@@ -13,8 +13,10 @@ import { CurrentUserId, RequirePlatformAdmin } from '../../../modules/shared';
 import { AdminRegistrationService } from '../application/admin-registration.service';
 import { RegistrationValidationService } from '../application/registration-validation.service';
 import { RegistrationComplementService } from '../application/registration-complement.service';
+import { RegistrationRefusalService } from '../application/registration-refusal.service';
 import {
   ListRegistrationRequestsQueryDto,
+  RefuseRequestDto,
   RequestComplementDto,
   UpdateInternalNoteDto,
 } from './admin-registration.dto';
@@ -34,6 +36,8 @@ import {
 //   POST /admin/registration-requests/:id/resend-activation-email   renvoi de l'email d'activation (R6)
 //   POST /admin/registration-requests/:id/request-complement        DEMANDER UN COMPLEMENT (EA-018, R7)
 //   POST /admin/registration-requests/:id/resend-complement-email   renvoi du complement, a l'identique
+//   POST /admin/registration-requests/:id/refuse                    REFUSER (EA-018, R8)
+//   POST /admin/registration-requests/:id/resend-refusal-email      renvoi de l'email de refus
 
 @Controller('admin/registration-requests')
 @RequirePlatformAdmin()
@@ -42,6 +46,7 @@ export class AdminRegistrationController {
     private readonly adminService: AdminRegistrationService,
     private readonly validationService: RegistrationValidationService,
     private readonly complementService: RegistrationComplementService,
+    private readonly refusalService: RegistrationRefusalService,
   ) {}
 
   @Get()
@@ -114,5 +119,40 @@ export class AdminRegistrationController {
     @CurrentUserId() adminUserId: string,
   ) {
     return { data: await this.complementService.resendComplementEmail(id, adminUserId), meta: {} };
+  }
+
+  /**
+   * REFUSER (brief R8) : motif interne (jamais communique) + message au demandeur + confirmation explicite.
+   * 200 { id, status: 'REFUSED', refusalEmail: { sent } } -- la reponse ne renvoie PAS le motif. `sent: false` si
+   * l'email n'est pas parti : le refus reste ACQUIS, l'echec est dans l'historique et le renvoi est possible.
+   * 400 champ manquant, texte identique dans les deux champs, ou confirmation absente ; 404 inconnue ; 409
+   * demande deja traitee ; 500 si l'enregistrement echoue : rien n'a alors ete modifie.
+   */
+  @Post(':id/refuse')
+  @HttpCode(200)
+  async refuse(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() body: RefuseRequestDto,
+    @CurrentUserId() adminUserId: string,
+  ) {
+    return {
+      data: await this.refusalService.refuse(
+        id,
+        adminUserId,
+        body.internalReason,
+        body.messageToApplicant,
+      ),
+      meta: {},
+    };
+  }
+
+  /** 200 { sent } ; 404 inconnue ; 409 demande non refusee ; 429 si un renvoi date de moins de 60 s. */
+  @Post(':id/resend-refusal-email')
+  @HttpCode(200)
+  async resendRefusalEmail(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @CurrentUserId() adminUserId: string,
+  ) {
+    return { data: await this.refusalService.resendRefusalEmail(id, adminUserId), meta: {} };
   }
 }

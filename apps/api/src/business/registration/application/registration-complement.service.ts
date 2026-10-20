@@ -17,7 +17,7 @@ import {
   claimComplementResendSlotByRequestId,
   findRequestStatusById,
   insertComplementRequestedEvent,
-  lockRequestForComplement,
+  lockRequestForAction,
   markComplementRequested,
 } from '../infrastructure/validation.queries';
 
@@ -69,7 +69,7 @@ export class RegistrationComplementService {
     try {
       recipient = await this.databaseService.db.transaction(async (tx) => {
         // Lue et verrouillee EN PREMIER : des actions simultanees sur la meme demande se serialisent.
-        const request = await lockRequestForComplement(tx, requestId);
+        const request = await lockRequestForAction(tx, requestId);
         if (!request) throw new NotFoundException("Demande d'inscription introuvable.");
         if (!OPEN_STATUSES.includes(request.status)) {
           throw new ConflictException(
