@@ -12,13 +12,15 @@ import { organizations } from './schema';
  * validation d'une inscription (organisation -> adhesion -> fiche medecin -> statut), qui doit
  * reussir ou echouer d'un bloc. Un seul chemin de code : createOrganization en est l'enveloppe.
  *
+ * `city` et `address` (TASK-062, brief R5) : repris de la demande d'inscription, facultatifs.
+ *
  * `id` facultatif : la cascade genere l'UUID en amont pour ouvrir la transaction scopee sur
  * l'organisation AVANT qu'elle n'existe. La table organizations n'a pas de RLS (elle EST l'unite
  * d'isolation) : `tx` peut donc etre aussi bien une transaction qu'une connexion simple.
  */
 export async function createOrganizationInTx(
   tx: NodePgDatabase,
-  data: { id?: string; name: string; slug: string },
+  data: { id?: string; name: string; slug: string; city?: string | null; address?: string | null },
 ) {
   const [created] = await tx.insert(organizations).values(data).returning();
   return created;

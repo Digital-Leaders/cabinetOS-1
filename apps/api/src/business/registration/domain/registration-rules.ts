@@ -61,3 +61,11 @@ export function maskEmail(email: string): string {
   if (at <= 0) return '•••••';
   return `${email[0]}•••••${email.slice(at)}`;
 }
+
+/**
+ * Nom du role donne au fondateur quand sa demande est validee (brief R4, operation 3 ; migration
+ * 0025). Le role est GLOBAL et seme par migration avec exactement les permissions manage et read sur
+ * patients et medecins (ADR-0021 D6). La cascade le retrouve par ce nom : un test echoue si la
+ * migration et cette constante divergent.
+ */
+export const FOUNDER_ROLE_NAME = 'fondateur';
