@@ -25,4 +25,18 @@ export const envValidationSchema = Joi.object({
   EMAIL_FROM_ADDRESS: Joi.string().email().default('noreply@portesante.ma'),
   EMAIL_FROM_NAME: Joi.string().default('PorteSanté'),
   EMAIL_REPLY_TO: Joi.string().email().default('verification@portesante.ma'),
+
+  // BUILD-004 etape 2, EA-018 / TASK-063 : adresse PUBLIQUE du site (le front), a laquelle pointe le
+  // lien « Se connecter » de l'email d'activation. EXPLICITE et OBLIGATOIRE en production : la deriver
+  // des origines de confiance (une liste de securite) serait fragile, et un lien vers localhost dans un
+  // email envoye a un medecin serait un defaut grave. Hors production, le front local par defaut.
+  APP_BASE_URL: Joi.when('NODE_ENV', {
+    is: 'production',
+    then: Joi.string()
+      .uri({ scheme: ['http', 'https'] })
+      .required(),
+    otherwise: Joi.string()
+      .uri({ scheme: ['http', 'https'] })
+      .default('http://localhost:3001'),
+  }),
 });

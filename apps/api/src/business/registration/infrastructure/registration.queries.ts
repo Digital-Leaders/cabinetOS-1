@@ -4,6 +4,7 @@ import type { DatabaseService } from '../../../modules/shared';
 import { registrationRequests, registrationEvents } from './schema';
 import type { RegistrationEventAction } from './schema';
 import { fromDbTimestampOrNull, fromDbTimestamp } from './db-timestamps';
+import { findPgCode } from './pg-errors';
 
 // TASK-052 (BUILD-004 etape 2, EA-014) : acces aux tables d'inscription (ADR-0021).
 //
@@ -50,7 +51,8 @@ export async function insertRegistrationRequest(
   });
 }
 
-type RegistrationEmailTemplate = 'registration-confirmation' | 'verification-complement';
+type RegistrationEmailTemplate =
+  'registration-confirmation' | 'verification-complement' | 'account-activation';
 
 /** Inscrit le resultat d'un envoi d'email dans l'historique (R6 : jamais le contenu). */
 export async function recordEmailEvent(
@@ -58,11 +60,13 @@ export async function recordEmailEvent(
   registrationRequestId: string,
   emailTemplate: RegistrationEmailTemplate,
   result: { ok: true } | { ok: false; retryable: boolean },
+  actorUserId: string | null = null,
 ): Promise<void> {
   const action: RegistrationEventAction = result.ok ? 'EMAIL_SENT' : 'EMAIL_FAILED';
   await db.insert(registrationEvents).values({
     registrationRequestId,
     action,
+    actorUserId,
     emailTemplate,
     emailFailureRetryable: result.ok ? null : result.retryable,
   });
@@ -73,10 +77,12 @@ export async function recordResendRequested(
   db: NodePgDatabase,
   registrationRequestId: string,
   emailTemplate: RegistrationEmailTemplate,
+  actorUserId: string | null = null,
 ): Promise<void> {
   await db.insert(registrationEvents).values({
     registrationRequestId,
     action: 'EMAIL_RESEND_REQUESTED',
+    actorUserId,
     emailTemplate,
   });
 }
@@ -251,13 +257,4 @@ export async function deleteOrphanAccountByEmail(
     if (findPgCode(error) === '23503') return false;
     throw error;
   }
-}
-
-function findPgCode(error: unknown): string | undefined {
-  for (let e: unknown = error, depth = 0; e && depth < 5; depth += 1) {
-    const code = (e as { code?: unknown }).code;
-    if (typeof code === 'string' && /^[0-9A-Z]{5}$/.test(code)) return code;
-    e = (e as { cause?: unknown }).cause;
-  }
-  return undefined;
 }
