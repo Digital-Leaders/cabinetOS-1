@@ -19,6 +19,7 @@ import {
 } from './admin-format';
 import { useSpecialtyLabel } from './use-specialty-label';
 import { AdminShell } from './admin-shell';
+import { ActionNotice, AdminActions, EmailRetryNotice, type ActionSettled } from './admin-actions';
 
 // BUILD-004 etape 2, EA-017 / TASK-060 : detail d'une demande -- port de la maquette
 // admin-validation.html (brief §5.4).
@@ -27,9 +28,10 @@ import { AdminShell } from './admin-shell';
 // n'est modifiable ici (et l'API n'a aucune route pour le faire, TASK-059). La note interne est la
 // seule chose enregistrable.
 //
-// Les trois actions (Valider, Demander un complement, Refuser) sont AFFICHEES mais inertes : leurs
-// fenetres et leur logique arrivent avec EA-018. Elles n'apparaissent que sur une demande encore
-// ouverte -- jamais sur une demande validee ou refusee.
+// Les trois actions (Valider, Demander un complement, Refuser) sont branchees (EA-018, TASK-066) : voir
+// admin-actions.tsx. Elles n'apparaissent que sur une demande encore ouverte -- jamais sur une demande
+// validee ou refusee. Apres une action, la demande est RELUE depuis le serveur : l'ecran montre l'etat reel,
+// jamais celui qu'il suppose.
 
 type Load =
   | { kind: 'loading' }
@@ -51,6 +53,8 @@ function DetailScreen({ locale, id }: { locale: string; id: string }) {
   const [load, setLoad] = useState<Load>({ kind: 'loading' });
   const routerRef = useRef(router);
   routerRef.current = router;
+  // Resultat de la derniere action : survit au rechargement de la demande (il vit ici, pas dans le corps).
+  const [notice, setNotice] = useState<{ tone: 'success' | 'warn'; text: string } | null>(null);
 
   const fetchDetail = useCallback(async () => {
     setLoad({ kind: 'loading' });
@@ -67,6 +71,37 @@ function DetailScreen({ locale, id }: { locale: string; id: string }) {
   useEffect(() => {
     void fetchDetail();
   }, [fetchDetail]);
+
+  /** Apres une action : on affiche son resultat, puis on RELIT l'etat reel de la demande. */
+  const handleSettled = useCallback(
+    (settled: ActionSettled) => {
+      if (settled.type === 'unauthenticated') {
+        routerRef.current.replace(`/${locale}/login`);
+        return;
+      }
+      if (settled.type === 'done') {
+        setNotice({ tone: 'success', text: t(`detail.notices.${settled.action}`) });
+      } else if (settled.type === 'conflict') {
+        setNotice({ tone: 'warn', text: t('detail.notices.conflict') });
+      } else {
+        setNotice({ tone: 'warn', text: t('detail.notices.uncertain') });
+      }
+      void fetchDetail();
+    },
+    [fetchDetail, locale, t],
+  );
+
+  const handleEmailChanged = useCallback(
+    (outcome: 'resent' | 'conflict') => {
+      setNotice(
+        outcome === 'resent'
+          ? { tone: 'success', text: t('detail.notices.resent') }
+          : { tone: 'warn', text: t('detail.notices.conflict') },
+      );
+      void fetchDetail();
+    },
+    [fetchDetail, t],
+  );
 
   const back = (
     <a
@@ -115,12 +150,28 @@ function DetailScreen({ locale, id }: { locale: string; id: string }) {
   return (
     <>
       {back}
-      <DetailBody detail={load.detail} locale={locale} />
+      <ActionNotice notice={notice} />
+      <DetailBody
+        detail={load.detail}
+        locale={locale}
+        onSettled={handleSettled}
+        onEmailChanged={handleEmailChanged}
+      />
     </>
   );
 }
 
-function DetailBody({ detail, locale }: { detail: AdminRequestDetail; locale: string }) {
+function DetailBody({
+  detail,
+  locale,
+  onSettled,
+  onEmailChanged,
+}: {
+  detail: AdminRequestDetail;
+  locale: string;
+  onSettled: (settled: ActionSettled) => void;
+  onEmailChanged: (outcome: 'resent' | 'conflict') => void;
+}) {
   const t = useTranslations('Admin');
   const specialtyLabel = useSpecialtyLabel();
   const specialty = specialtyLabel(detail.doctor.specialty);
@@ -128,6 +179,7 @@ function DetailBody({ detail, locale }: { detail: AdminRequestDetail; locale: st
 
   return (
     <>
+      <EmailRetryNotice detail={detail} onChanged={onEmailChanged} />
       <section className="ad-dhead">
         <div className="ad-dhead-nm">
           {t('doctorPrefix')} {detail.doctor.firstName} {detail.doctor.lastName}
@@ -214,18 +266,7 @@ function DetailBody({ detail, locale }: { detail: AdminRequestDetail; locale: st
 
       {isOpenStatus(detail.status) && (
         <div>
-          <div className="ad-actions">
-            <button type="button" className="ad-btn ad-btn-ok" disabled>
-              {t('detail.actions.validate')}
-            </button>
-            <button type="button" className="ad-btn ad-btn-compl" disabled>
-              {t('detail.actions.complement')}
-            </button>
-            <button type="button" className="ad-btn ad-btn-no" disabled>
-              {t('detail.actions.refuse')}
-            </button>
-          </div>
-          <p className="ad-card-note ad-actions-note">{t('detail.actions.soon')}</p>
+          <AdminActions detail={detail} onSettled={onSettled} />
         </div>
       )}
     </>

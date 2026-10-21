@@ -148,3 +148,135 @@ export async function saveInternalNote(
   );
   return (await response.json()).data;
 }
+
+// ---------------------------------------------------------------------------------------
+// BUILD-004 etape 2, EA-018 / TASK-066 : les TROIS ACTIONS de l'administrateur (Valider, Demander un
+// complement, Refuser) et le renvoi d'un email. Routes livrees par TASK-063, 064 et 065.
+//
+// Classement d'erreurs PROPRE aux actions (celui de ci-dessus, partage par la lecture, reste inchange). Ici la
+// DISTINCTION qui compte pour ne pas valider deux fois :
+//   - SERVER    : le serveur a repondu par une erreur ; pour ces actions il garantit que RIEN n'a ete modifie
+//                 (la transaction est annulee) : on peut reessayer ;
+//   - UNCERTAIN : aucune reponse (reseau coupe) ; l'action a PEUT-ETRE reussi : on ne propose PAS de reessayer a
+//                 l'aveugle, on relit l'etat reel de la demande.
+
+export type AdminActionErrorKind =
+  | 'UNAUTHENTICATED'
+  | 'FORBIDDEN'
+  | 'NOT_FOUND'
+  | 'CONFLICT' // 409 : demande deja traitee (y compris par un autre administrateur au meme instant)
+  | 'INVALID' // 400 : saisie refusee par le serveur
+  | 'TOO_SOON' // 429 : un renvoi d'email vient d'avoir lieu
+  | 'SERVER' // erreur serveur : rien n'a ete modifie
+  | 'UNCERTAIN'; // pas de reponse : resultat inconnu
+
+export class AdminActionError extends Error {
+  kind: AdminActionErrorKind;
+  constructor(kind: AdminActionErrorKind) {
+    super(kind);
+    this.name = 'AdminActionError';
+    this.kind = kind;
+  }
+}
+
+function classifyAction(status: number): AdminActionError {
+  if (status === 401) return new AdminActionError('UNAUTHENTICATED');
+  if (status === 403) return new AdminActionError('FORBIDDEN');
+  if (status === 404) return new AdminActionError('NOT_FOUND');
+  if (status === 409) return new AdminActionError('CONFLICT');
+  if (status === 400) return new AdminActionError('INVALID');
+  if (status === 429) return new AdminActionError('TOO_SOON');
+  return new AdminActionError('SERVER');
+}
+
+async function postAction(path: string, body?: unknown): Promise<Record<string, unknown>> {
+  let response: Response;
+  try {
+    response = await fetch(`/api/v1/admin/registration-requests/${path}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  } catch {
+    throw new AdminActionError('UNCERTAIN');
+  }
+  if (!response.ok) throw classifyAction(response.status);
+  const parsed = await response.json().catch(() => null);
+  // Reponse 2xx mais illisible : l'action a reussi, on ne sait simplement pas le detail.
+  return (parsed?.data ?? {}) as Record<string, unknown>;
+}
+
+const enc = encodeURIComponent;
+
+/** VALIDER (TASK-063). `emailSent: false` : la validation est ACQUISE, l'email d'activation n'est pas parti. */
+export async function validateRegistrationRequest(
+  id: string,
+): Promise<{ organizationId: string; emailSent: boolean }> {
+  const data = await postAction(`${enc(id)}/validate`);
+  return {
+    organizationId: String(data.organizationId ?? ''),
+    emailSent: (data.activationEmail as { sent?: boolean } | undefined)?.sent === true,
+  };
+}
+
+export type ComplementInfoType = 'google_listing' | 'other_public_presence' | 'other';
+
+export interface ComplementInput {
+  infoType: ComplementInfoType;
+  /** Exigee seulement pour `other`. */
+  otherInfo?: string;
+  message: string;
+}
+
+/** DEMANDER UN COMPLEMENT (TASK-064). */
+export async function requestComplement(
+  id: string,
+  input: ComplementInput,
+): Promise<{ emailSent: boolean }> {
+  const data = await postAction(`${enc(id)}/request-complement`, {
+    infoType: input.infoType,
+    ...(input.infoType === 'other' ? { otherInfo: input.otherInfo } : {}),
+    message: input.message,
+  });
+  return { emailSent: (data.complementEmail as { sent?: boolean } | undefined)?.sent === true };
+}
+
+export interface RefusalInput {
+  internalReason: string;
+  messageToApplicant: string;
+}
+
+/**
+ * REFUSER (TASK-065). `confirmed: true` est ENVOYE ICI et nulle part ailleurs : cette fonction n'est appelee que
+ * par le bouton de confirmation de la fenetre de refus. Le serveur l'exige (un refus est definitif et envoie un
+ * email) : un appel sans confirmation n'a aucun effet.
+ */
+export async function refuseRegistrationRequest(
+  id: string,
+  input: RefusalInput,
+): Promise<{ emailSent: boolean }> {
+  const data = await postAction(`${enc(id)}/refuse`, {
+    internalReason: input.internalReason,
+    messageToApplicant: input.messageToApplicant,
+    confirmed: true,
+  });
+  return { emailSent: (data.refusalEmail as { sent?: boolean } | undefined)?.sent === true };
+}
+
+export type ResendEmailKind = 'activation' | 'complement' | 'refusal';
+
+const RESEND_ROUTES: Record<ResendEmailKind, string> = {
+  activation: 'resend-activation-email',
+  complement: 'resend-complement-email',
+  refusal: 'resend-refusal-email',
+};
+
+/** Renvoi d'un email (TASK-063/064/065), sous la garde anti-abus de 60 s du serveur (429 : TOO_SOON). */
+export async function resendRegistrationEmail(
+  id: string,
+  kind: ResendEmailKind,
+): Promise<{ sent: boolean }> {
+  const data = await postAction(`${enc(id)}/${RESEND_ROUTES[kind]}`);
+  return { sent: data.sent === true };
+}
