@@ -536,18 +536,216 @@
   gap: 10px;
   flex-wrap: wrap;
 }
-/* Les trois actions sont inertes jusqu'a EA-018 : texte gris lisible (5,08), pas d'effet. */
+/* Les trois actions (EA-018, TASK-066) : boutons contours en pied de page ; les boutons PLEINS vivent dans les
+ * fenetres de confirmation, pour que le geste decisif soit le bouton de la fenetre, jamais celui de la page. */
 .ad-btn-ok,
 .ad-btn-compl,
 .ad-btn-no {
   background: #fff;
-  color: var(--ad-hint);
-  border-color: var(--ad-rule);
 }
 .ad-btn-ok {
   flex: 1;
   min-width: 140px;
+  color: var(--ad-green);
+  border-color: var(--ad-greenbd, #b8dcc6);
 }
-.ad-actions-note {
-  margin: 10px 0 0;
+.ad-btn-compl {
+  color: var(--ad-amber);
+  border-color: var(--ad-amberbd);
+}
+.ad-btn-no {
+  color: var(--ad-red);
+  border-color: var(--ad-redbd);
+}
+.ad-btn-ok:hover,
+.ad-btn-compl:hover,
+.ad-btn-no:hover {
+  background: var(--ad-wash);
+}
+.ad-btn-ok-solid,
+.ad-btn-compl-solid,
+.ad-btn-no-solid {
+  color: #fff;
+}
+.ad-btn-ok-solid {
+  background: var(--ad-green);
+}
+.ad-btn-compl-solid {
+  background: var(--ad-amber);
+}
+.ad-btn-no-solid {
+  background: var(--ad-red);
+}
+.ad-btn-ok-solid:disabled,
+.ad-btn-compl-solid:disabled,
+.ad-btn-no-solid:disabled {
+  opacity: 0.55;
+}
+
+/* ---- fenetres de confirmation ---- */
+.ad-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(26, 43, 52, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.ad-modal {
+  background: #fff;
+  color: var(--ad-ink);
+  border-radius: 12px;
+  box-shadow: var(--ad-shadow);
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 24px;
+}
+.ad-modal:focus {
+  outline: none;
+}
+.ad-modal h2 {
+  font-size: 17px;
+  margin: 0 0 12px;
+}
+.ad-dialog-lead {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+.ad-dialog-list {
+  margin: 0 0 12px;
+  padding-inline-start: 22px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.ad-dialog-note {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--ad-grey);
+}
+.ad-dialog-warning {
+  background: var(--ad-amberbg);
+  color: var(--ad-amber);
+  border: 1px solid var(--ad-amberbd);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-weight: 600;
+}
+.ad-dialog-error {
+  margin: 0 0 12px;
+  padding: 9px 12px;
+  background: var(--ad-redbg);
+  border: 1px solid var(--ad-redbd);
+  border-radius: 8px;
+  color: var(--ad-red);
+  font-size: 13px;
+}
+.ad-dialog-foot {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.ad-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 14px;
+}
+.ad-fieldset legend {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: 8px;
+}
+.ad-radio {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+.ad-field {
+  margin: 0 0 14px;
+}
+.ad-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.ad-field input[type='text'],
+.ad-field textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ad-ink);
+  background: #fff;
+  border: 1px solid var(--ad-rule);
+  border-radius: 8px;
+  padding: 9px 11px;
+  resize: vertical;
+}
+.ad-field textarea::placeholder {
+  color: var(--ad-hint);
+}
+.ad-field input:focus,
+.ad-field textarea:focus {
+  outline: 2px solid var(--ad-teal);
+  outline-offset: 1px;
+}
+/* Le motif interne est visuellement distinct : il ne doit JAMAIS etre confondu avec le message au demandeur. */
+.ad-field-internal textarea {
+  background: var(--ad-wash);
+  border-color: var(--ad-hint);
+}
+.ad-field-hint {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: var(--ad-hint);
+}
+
+/* ---- bandeaux de resultat ---- */
+.ad-notice {
+  border-radius: 9px;
+  padding: 11px 14px;
+  margin: 0 0 14px;
+  font-size: 14px;
+  border: 1px solid transparent;
+}
+.ad-notice p {
+  margin: 0;
+}
+.ad-notice .ad-btn {
+  margin-top: 10px;
+}
+.ad-notice-sub {
+  margin-top: 8px !important;
+  font-size: 13px;
+}
+.ad-notice-ok {
+  background: var(--ad-greenbg);
+  color: var(--ad-green);
+  border-color: #b8dcc6;
+}
+.ad-notice-warn {
+  background: var(--ad-amberbg);
+  color: var(--ad-amber);
+  border-color: var(--ad-amberbd);
+}
+
+@media (max-width: 480px) {
+  .ad-modal {
+    padding: 18px;
+  }
+  .ad-dialog-foot {
+    flex-direction: column-reverse;
+  }
+  .ad-dialog-foot .ad-btn {
+    width: 100%;
+  }
 }

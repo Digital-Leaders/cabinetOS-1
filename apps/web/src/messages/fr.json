@@ -485,8 +485,72 @@
       "actions": {
         "validate": "Valider",
         "complement": "Demander un complément",
-        "refuse": "Refuser",
-        "soon": "Ces trois actions seront disponibles prochainement."
+        "refuse": "Refuser"
+      },
+      "notices": {
+        "validate": "Demande validée : le compte est actif et l'organisation est créée.",
+        "complement": "Demande de complément envoyée au médecin.",
+        "refuse": "Demande refusée.",
+        "resent": "Email renvoyé.",
+        "conflict": "Cette demande a déjà été traitée (peut-être par un autre administrateur). L'affichage a été actualisé.",
+        "uncertain": "Le résultat de l'action est incertain (connexion interrompue). L'affichage a été actualisé : vérifiez l'état de la demande avant de réessayer."
+      }
+    },
+    "actions": {
+      "cancel": "Annuler",
+      "sending": "Envoi…",
+      "errors": {
+        "invalid": "Certains champs ne sont pas acceptés. Vérifiez votre saisie.",
+        "forbidden": "Vous n'avez pas le droit d'effectuer cette action.",
+        "server": "L'action n'a pas pu être enregistrée : rien n'a été modifié. Réessayez dans quelques instants."
+      },
+      "validate": {
+        "title": "Confirmer la validation",
+        "lead": "La validation de la demande de {name} déclenche, ensemble :",
+        "steps": {
+          "activate": "activation du compte",
+          "organization": "création de son organisation",
+          "member": "rattachement du fondateur comme premier membre",
+          "doctor": "création de sa fiche médecin (pré-remplie)"
+        },
+        "then": "Puis, séparément : envoi de l'email d'activation. Si l'email échoue, la validation reste acquise et l'envoi pourra être relancé.",
+        "confirm": "Confirmer la validation"
+      },
+      "complement": {
+        "title": "Demander un complément",
+        "lead": "Un email sera envoyé au médecin. Il pourra y répondre directement (lui ou son secrétariat).",
+        "infoLabel": "Information demandée",
+        "types": {
+          "google_listing": "Lien vers la fiche Google de l'établissement",
+          "other_public_presence": "Lien vers une autre présence professionnelle publique",
+          "other": "Autre information — à préciser"
+        },
+        "otherLabel": "Précisez l'information demandée",
+        "messageLabel": "Message au médecin",
+        "messageHint": "Pré-rempli, modifiable.",
+        "confirm": "Envoyer la demande"
+      },
+      "refuse": {
+        "title": "Refuser la demande",
+        "lead": "Deux champs distincts, pour ne jamais envoyer par accident une note interne au médecin.",
+        "reasonLabel": "Motif interne — non communiqué au demandeur · obligatoire",
+        "reasonHint": "Visible uniquement par l'équipe.",
+        "reasonPlaceholder": "Ex. INPE introuvable, aucune concordance sur les sources publiques.",
+        "messageLabel": "Message communiqué au demandeur",
+        "messageHint": "Pré-rempli, modifiable.",
+        "sameText": "Le message au demandeur ne peut pas être identique au motif interne.",
+        "definitive": "Ce refus est définitif : le demandeur ne pourra pas se réinscrire avec cet email.",
+        "confirm": "Refuser la demande"
+      },
+      "emailRetry": {
+        "message": {
+          "activation": "L'email d'activation n'est pas parti. La validation reste enregistrée ; vous pouvez relancer l'envoi.",
+          "complement": "L'email de complément n'est pas parti. La demande reste enregistrée ; vous pouvez relancer l'envoi.",
+          "refusal": "L'email de refus n'est pas parti. Le refus reste enregistré ; vous pouvez relancer l'envoi."
+        },
+        "button": "Renvoyer l'email",
+        "tooSoon": "Un email vient d'être renvoyé. Patientez une minute avant un nouvel envoi.",
+        "failed": "L'email n'a pas pu être renvoyé. Réessayez dans quelques instants."
       }
     }
   }

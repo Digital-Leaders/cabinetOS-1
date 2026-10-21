@@ -7,7 +7,8 @@ import messages from '../../messages/fr.json';
 
 // BUILD-004 etape 2, EA-017 / TASK-060 : detail d'une demande (brief §5.4). LECTURE SEULE : on
 // examine une declaration, on ne la reecrit pas. Seule la note interne est enregistrable. Les
-// trois actions sont affichees mais inertes (EA-018), et seulement sur une demande ouverte.
+// trois actions sont branchees (EA-018, TASK-066 : voir admin-actions.spec.tsx), et seulement sur une
+// demande ouverte.
 
 jest.mock('next-intl', () => ({
   useTranslations: (ns: string) => (key: string, values?: Record<string, string | number>) =>
@@ -412,9 +413,9 @@ describe('AdminRequestDetailScreen (TASK-060)', () => {
     });
   });
 
-  describe('les trois actions : affichees, INERTES (EA-018), seulement sur une demande ouverte', () => {
+  describe('les trois actions : affichees seulement sur une demande ouverte (EA-018, TASK-066)', () => {
     it.each(['PENDING_VERIFICATION', 'COMPLEMENT_REQUESTED'] as const)(
-      '%s : trois boutons inactifs et la mention « bientot disponibles »',
+      '%s : trois boutons actifs, et plus aucune mention « bientot disponibles »',
       async (status) => {
         await renderDetail({
           status,
@@ -422,9 +423,9 @@ describe('AdminRequestDetailScreen (TASK-060)', () => {
             status === 'COMPLEMENT_REQUESTED' ? { requestedInfo: 'x', message: 'y' } : null,
         });
         for (const label of [d.actions.validate, d.actions.complement, d.actions.refuse]) {
-          expect(screen.getByRole('button', { name: label })).toBeDisabled();
+          expect(screen.getByRole('button', { name: label })).toBeEnabled();
         }
-        expect(screen.getByText(d.actions.soon)).toBeInTheDocument();
+        expect(screen.queryByText(/prochainement/)).not.toBeInTheDocument();
       },
     );
 
@@ -436,13 +437,13 @@ describe('AdminRequestDetailScreen (TASK-060)', () => {
       for (const label of [d.actions.validate, d.actions.complement, d.actions.refuse]) {
         expect(screen.queryByRole('button', { name: label })).not.toBeInTheDocument();
       }
-      expect(screen.queryByText(d.actions.soon)).not.toBeInTheDocument();
     });
 
-    it('un clic sur une action inerte ne fait rien : aucun appel, aucune navigation', async () => {
+    it('un clic sur une action ouvre sa fenetre de confirmation, sans rien envoyer', async () => {
       const user = userEvent.setup();
       await renderDetail();
       await user.click(screen.getByRole('button', { name: d.actions.validate }));
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(saveNoteMock).not.toHaveBeenCalled();
       expect(pushMock).not.toHaveBeenCalled();
     });
