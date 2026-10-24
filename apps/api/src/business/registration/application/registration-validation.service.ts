@@ -146,11 +146,13 @@ export class RegistrationValidationService {
     });
 
     // Operation 4 : sa fiche medecin, par la fonction du module Medecin (R4 : pas de chemin parallele),
-    // liee a son compte. R5 : nom, prenom, specialite, INPE, numero d'Ordre.
+    // liee a son compte. R5 (« aucune ressaisie ») : nom, prenom, specialite, INPE, numero d'Ordre ET ville --
+    // la meme que celle posee sur l'organisation. (La fiche medecin n'a pas d'adresse : seule l'organisation en a une.)
     await createMedecinInTx(tx, organizationId, {
       firstName: request.firstName,
       lastName: request.lastName,
       userId: request.userId,
+      city: request.city,
       ...(specialty ? { specialty } : {}),
       ...(request.inpe ? { inpe: request.inpe } : {}),
       ...(request.numeroOrdre ? { numeroOrdre: request.numeroOrdre } : {}),
