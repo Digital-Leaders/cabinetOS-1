@@ -24,6 +24,7 @@ cabinetos/
     ├── adr/                décisions d'architecture   c'est ICI qu'on met la
     ├── builds/             bilans de fin de Build      discipline
     ├── specs/              RFA · Engineering Assets
+    ├── runbooks/           procédures d'exploitation (migrations, déploiement)
     └── ORGANISATION.md     ce document
 ```
 

@@ -154,6 +154,8 @@ platform admin ne le sont jamais.
 compte est conservé au refus : un médecin refusé ne peut pas se réinscrire en V1.
 Refusé = nous recontacter. Choix délibéré, pas un effet de bord.
 
+**Portée de la décision.** Le caractère définitif du refus est acté pour le parcours d’inscription du fondateur uniquement : pas de réinscription, le compte reste bloqué. L’interaction entre un refus et une invitation future (étape 3) n’est pas décidée ici : elle est volontairement reportée (registre des cibles reportées, C10) et sera tranchée à la conception de l’étape 3. Piste envisagée : une invitation émise par un fondateur validé pourrait lever un refus antérieur, avec confirmation explicite de l’admin.
+
 **P3 — Invariant `platform_admins` (D3).** C'est la seule table qui transcende
 l'isolation des tenants. Tant que l'étape 2-bis n'existe pas, un admin n'y est
 ajouté que par le script documenté, et chaque ajout est tracé. Rappelé dans le
