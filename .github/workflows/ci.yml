@@ -58,6 +58,10 @@ jobs:
 
       - name: Apply database migrations and RLS policies
         run: |
+          # psql s'arrete a la premiere instruction en erreur et rend un code de sortie non nul. Sans cette option, une
+          # migration qui echoue a mi-parcours rend le code 0 et la suite du fichier s'execute (constate, PR #77).
+          # Defini ICI, pour TOUS les appels psql de l'etape : une migration ajoutee plus tard en beneficie sans y penser.
+          psql() { command psql -v ON_ERROR_STOP=1 "$@"; }
           PGPASSWORD=postgres psql -h localhost -U postgres -d cabinetos_test -f db/migrations/0000_*.sql
           PGPASSWORD=postgres psql -h localhost -U postgres -d cabinetos_test -f db/migrations/0001_*.sql
           PGPASSWORD=postgres psql -h localhost -U postgres -d cabinetos_test -f db/migrations/0002_*.sql
