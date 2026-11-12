@@ -238,7 +238,11 @@ function Refused({ data }: { data: StatusData }) {
       <h1>{t('refused.title')}</h1>
       {/* Uniquement le message destine au demandeur (R8) : c'est tout ce que le serveur
           renvoie sur ce chemin, le motif interne n'y est jamais lu. */}
-      {data.refusalMessage && <p className="rs-body rs-message">{data.refusalMessage}</p>}
+      {data.refusalMessage && (
+        <p className="rs-body rs-message" dir="auto">
+          {data.refusalMessage}
+        </p>
+      )}
       <p className="rs-body">{t('refused.contact')}</p>
     </>
   );

@@ -534,6 +534,31 @@ describe('fenetre « Refuser » : deux champs distincts (R8)', () => {
 });
 
 // ---------------------------------------------------------------------------------------
+describe('sens de lecture des textes saisis (page arabe, message francais)', () => {
+  it('les champs de saisie des messages et de la precision ont un sens de lecture AUTOMATIQUE', async () => {
+    const user = userEvent.setup();
+    await renderDetail();
+    const dialog = await open(user, d.actions.complement);
+    expect(within(dialog).getByLabelText(new RegExp(act_.complement.messageLabel))).toHaveAttribute(
+      'dir',
+      'auto',
+    );
+    await user.click(within(dialog).getByRole('radio', { name: act_.complement.types.other }));
+    expect(within(dialog).getByLabelText(act_.complement.otherLabel)).toHaveAttribute(
+      'dir',
+      'auto',
+    );
+    await user.keyboard('{Escape}');
+
+    const refuse = await open(user, d.actions.refuse);
+    expect(within(refuse).getByLabelText(act_.refuse.reasonLabel)).toHaveAttribute('dir', 'auto');
+    expect(within(refuse).getByLabelText(new RegExp(act_.refuse.messageLabel))).toHaveAttribute(
+      'dir',
+      'auto',
+    );
+  });
+});
+
 describe('accessibilite des fenetres', () => {
   it('le focus ENTRE dans la fenetre a l ouverture et REVIENT au bouton d origine a la fermeture', async () => {
     const user = userEvent.setup();

@@ -2,6 +2,7 @@ import type { Viewport } from 'next';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '../../i18n/routing';
+import '../../styles/reset.css';
 
 // Parcours d'acces, etape 1 -- regle non-negociable n°2 : "Thème clair forcé...
 // À garantir au niveau de l'application (une page seule ne peut pas toujours

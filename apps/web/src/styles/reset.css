@@ -1,0 +1,15 @@
+/*
+ * Reset minimal commun a TOUTES les pages (importe par le layout racine, [locale]/layout.tsx).
+ *
+ * Les maquettes du Product Owner declarent toutes `*{box-sizing:border-box}` ; l'application ne reprenait pas cette
+ * regle. Un champ a `width: 100%` avec des marges internes (padding) depassait alors de son conteneur de la valeur de
+ * ses marges et de sa bordure -- constate : 26 px sur l'inscription, 28 px sur la connexion, les champs cote a cote
+ * (prenom / nom, INPE / numero d'Ordre) se chevauchaient, et les fenetres de dialogue de l'espace admin avaient un
+ * defilement horizontal sur telephone. Les listes deroulantes et les boutons, eux, sont deja en border-box par defaut :
+ * ils etaient plus courts que les champs texte.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

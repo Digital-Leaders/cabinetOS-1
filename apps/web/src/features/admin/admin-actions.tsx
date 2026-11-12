@@ -284,6 +284,7 @@ function ComplementDialog({
             <input
               id={otherId}
               type="text"
+              dir="auto"
               maxLength={MAX_OTHER_INFO_LENGTH}
               value={otherInfo}
               onChange={(e) => setOtherInfo(e.target.value)}
@@ -413,6 +414,7 @@ function MessageField({
       <label htmlFor={fieldId}>{label}</label>
       <textarea
         id={fieldId}
+        dir="auto"
         rows={internal ? 3 : 5}
         value={value}
         placeholder={placeholder}

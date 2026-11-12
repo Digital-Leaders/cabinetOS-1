@@ -165,6 +165,20 @@ describe('RegistrationStatusScreen (TASK-055)', () => {
     expect(screen.queryByRole('button', { name: s.complement.resend })).not.toBeInTheDocument();
   });
 
+  it("refusee, page ARABE : le message (ecrit en francais par l'equipe) a un sens de lecture AUTOMATIQUE", async () => {
+    // Defaut mesure dans un navigateur : dans une page de droite a gauche, un message francais voyait son point final
+    // passer au DEBUT de la ligne. `dir="auto"` laisse le navigateur decider d'apres les lettres du message.
+    fetchStatusMock.mockResolvedValue({
+      status: 'REFUSED',
+      maskedEmail: 'y•••••@cabinet.ma',
+      refusalMessage: 'Nous ne pouvons pas donner suite a votre demande.',
+    });
+    render(<RegistrationStatusScreen locale="ar" />);
+
+    const message = await screen.findByText('Nous ne pouvons pas donner suite a votre demande.');
+    expect(message).toHaveAttribute('dir', 'auto');
+  });
+
   it.each([
     ['ACTIVE', { status: 'ACTIVE', maskedEmail: 'y•••••@cabinet.ma' }],
     ['compte sans demande', { status: null }],
