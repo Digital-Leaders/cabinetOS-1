@@ -15,9 +15,19 @@ CREATE EXTENSION IF NOT EXISTS unaccent;
 -- utilisable directement dans un index. Enveloppe immutable, standard pour ce cas --
 -- le dictionnaire unaccent utilise ici est fixe, son comportement est stable en
 -- pratique pour cet usage.
+--
+-- CORRECTION (clôture BUILD-004, étape 2) : cette fonction était d'abord écrite en LANGUAGE sql
+-- (`SELECT unaccent('unaccent', $1)`). Depuis PostgreSQL 17, la creation d'un index s'execute avec un
+-- search_path restreint : unaccent() n'y est plus trouvee et le CREATE INDEX ci-dessous echouait
+-- (« function unaccent(unknown, text) does not exist »). Cet echec etait sans consequence tant que les
+-- erreurs de psql etaient ignorees, car la migration 0010 recreait ensuite fonction et index. La forme
+-- ci-dessous est celle que pose 0010 (plpgsql, jamais inlinee, search_path fixe sur la fonction) : 0009
+-- reussit desormais sur PostgreSQL 16, 17 et 18, et 0010 la recree a l'identique.
 CREATE OR REPLACE FUNCTION patient_search_unaccent(text) RETURNS text AS $$
-  SELECT unaccent('unaccent', $1)
-$$ LANGUAGE sql IMMUTABLE PARALLEL SAFE STRICT;
+BEGIN
+  RETURN unaccent($1);
+END;
+$$ LANGUAGE plpgsql IMMUTABLE PARALLEL SAFE STRICT SET search_path = public, pg_catalog;
 
 CREATE INDEX patients_name_trgm_idx ON patients
   USING gin (patient_search_unaccent(lower(first_name || ' ' || last_name)) gin_trgm_ops);
