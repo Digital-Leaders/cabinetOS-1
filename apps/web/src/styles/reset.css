@@ -13,3 +13,13 @@
 *::after {
   box-sizing: border-box;
 }
+
+/*
+ * Marges du corps de la page. Les maquettes commencent par `body{margin:0;padding:0}` ; l'application n'avait AUCUNE
+ * regle sur le corps. Le navigateur ajoutait donc ses 8 px de marge par defaut tout autour : un cadre BLANC de 8 px
+ * autour du fond gris, et les ecrans qui occupent toute la hauteur (connexion, inscription, statuts) depassaient la
+ * fenetre de 16 px (2 x 8), d'ou une barre de defilement verticale inutile (mesure : 18 pages sur 50).
+ */
+body {
+  margin: 0;
+}
