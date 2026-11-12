@@ -134,6 +134,29 @@ describe('AdminRequestDetailScreen (TASK-060)', () => {
       expect(screen.getByText('123456789')).toHaveAttribute('dir', 'ltr');
       expect(screen.getByText('ORD-42')).toHaveAttribute('dir', 'ltr');
     });
+
+    it('un texte SAISI par une personne (message, motif, nom) a un sens de lecture automatique, pas celui de la page', async () => {
+      await renderDetail(
+        {
+          status: 'COMPLEMENT_REQUESTED',
+          complement: {
+            requestedInfo: 'le lien de votre fiche Google',
+            message: 'Merci de repondre a cet email.',
+          },
+        },
+        'ar',
+      );
+      expect(screen.getByText('Merci de repondre a cet email.')).toHaveAttribute('dir', 'auto');
+      expect(screen.getByText('le lien de votre fiche Google')).toHaveAttribute('dir', 'auto');
+      // Les identifiants techniques restent, eux, FORCES de gauche a droite.
+      expect(screen.getByText('y.bennani@cabinet.ma')).toHaveAttribute('dir', 'ltr');
+    });
+
+    it('une valeur absente (« non renseigne ») suit la langue de la page : aucun sens force', async () => {
+      await renderDetail({ structure: { name: 'Cabinet', city: 'Rabat', address: null } }, 'ar');
+      for (const empty of screen.getAllByText(a.notSpecified))
+        expect(empty).not.toHaveAttribute('dir');
+    });
   });
 
   describe('LECTURE SEULE : les donnees declarees ne sont pas modifiables', () => {

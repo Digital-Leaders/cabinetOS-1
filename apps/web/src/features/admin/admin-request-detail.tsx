@@ -302,7 +302,9 @@ function Row({
       <span className="ad-k">{label}</span>
       <span
         className={`ad-v${empty ? ' empty' : ''}${pre ? ' ad-pre' : ''}`}
-        dir={ltr && !empty ? 'ltr' : undefined}
+        // Texte saisi par une personne (nom, message, motif...) : son sens de lecture depend de SES lettres, pas de la
+        // langue de la page (un message francais dans une page arabe garde sa ponctuation finale a droite).
+        dir={empty ? undefined : ltr ? 'ltr' : 'auto'}
       >
         {empty ? t('notSpecified') : value}
       </span>
@@ -339,6 +341,7 @@ function InternalNote({ id, initial }: { id: string; initial: string | null }) {
       <p className="ad-card-note">{t('detail.note.sub')}</p>
       <textarea
         aria-label={t('detail.note.label')}
+        dir="auto"
         value={value}
         maxLength={2000}
         onChange={(e) => {
