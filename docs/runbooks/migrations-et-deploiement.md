@@ -7,6 +7,11 @@ Les commandes ci-dessous ont été **exécutées** sur une base PostgreSQL 16 vi
 PostgreSQL 18 (version de la CI et de `docker-compose`), et tout ce qui dépend de l'hébergement. Les passages
 **« À COMPLÉTER (hébergement) »** attendent la personne qui y a accès.
 
+> **ATTENTION : ne lancez JAMAIS `drizzle-kit migrate` (ni `npx drizzle-kit migrate`) sur une base de recette ou de
+> production.** Son journal ne contient que **15 entrées (0000 à 0014)** pour **26 fichiers** : il n'appliquerait pas les
+> onze dernières migrations (0015 à 0025), c'est-à-dire toutes celles des étapes 1 et 2. Les migrations s'appliquent
+> **uniquement avec `psql`, fichier par fichier** (section 3, bloc `A3`).
+
 ## 1. Principes
 
 - **Les migrations sont des fichiers SQL versionnés (`db/migrations/*.sql`), appliqués explicitement, jamais
@@ -44,7 +49,8 @@ export APP_DB_PASSWORD='UN_SECRET_FORT_DIFFERENT_DE_CELUI_DE_LA_CI'
 **Ordre impératif : le rôle applicatif est créé AVANT les migrations.** Les migrations 0003, 0019 et 0023 *retirent* des
 droits à ce rôle ; elles échouent s'il n'existe pas (§6, cas 2), et elles perdent leur effet si des droits généraux sont
 accordés après elles (§6, cas 3). La CI procède autrement (migrations, puis création du rôle, puis 0003, 0019 et 0023) ; le
-résultat est le même (vérifié), mais l'ordre ci-dessous est plus simple et ne demande aucune exception.
+résultat est le même (vérifié), mais l'ordre ci-dessous, **retenu à la clôture de l'étape 2**, est plus simple et ne demande
+aucune exception.
 
 **A1 — Créer la base**
 ```bash
@@ -76,7 +82,8 @@ for f in db/migrations/*.sql; do
 done
 ```
 - **`-v ON_ERROR_STOP=1` est indispensable** : sans lui, `psql` continue après une instruction en erreur et rend le code de
-  sortie **0** (§6, cas 1). `ci.yml` n'utilise pas cette option aujourd'hui.
+  sortie **0** (§6, cas 1). La CI l'applique désormais à son étape de migrations (PR « ci: arrêter l'étape de migrations à la
+  première erreur SQL »).
 - **`--single-transaction`** : chaque fichier est appliqué en entier ou pas du tout. Testé sur les 26 fichiers (PostgreSQL 16).
 - L'ordre alphabétique des fichiers est l'ordre numérique (numéros sur quatre chiffres).
 - Durée mesurée sur une base vierge : environ 2 secondes.
@@ -158,7 +165,7 @@ transaction), en surveillant cinq compteurs (permissions, rôles, liens rôle-pe
 - **Application** : tags d'image Docker. **À COMPLÉTER (hébergement)** : où les tags sont conservés, et la commande pour revenir à l'état précédent.
 - **Base** : 21 migrations sur 26 portent une section `DOWN` en **commentaire**, qui n'est **jamais exécutée automatiquement**.
   **Cinq n'en ont aucune : 0000, 0001, 0002, 0004, 0012** ; pour celles-ci, le retour arrière se fait par **restauration d'une
-  sauvegarde**. Une section `DOWN` est **destructive** quand elle supprime une colonne ou une table : les données qu'elles
+  sauvegarde** (précision aussi consignée dans ADR-0011). Une section `DOWN` est **destructive** quand elle supprime une colonne ou une table : les données qu'elles
   contiennent sont perdues. Toujours sauvegarder avant, et l'exécuter à la main, dans une transaction.
 
 ## 6. Quand ça tourne mal : les trois erreurs d'exploitation (reproduites)
@@ -209,5 +216,5 @@ if [ -z "$OUT" ]; then echo "RESTAURATION OK : aucune violation"; else echo "VIO
 - [ ] La commande de démarrage de l'API et du front, et la gestion des tags d'image (§3 A7, §5).
 - [ ] La sauvegarde automatique réelle et la fréquence du test de restauration (§7).
 - [ ] La version PostgreSQL de l'hébergement : ce runbook a été validé sur la 16 ; la CI utilise la 18.
-- [ ] Une **table de suivi des migrations** : recommandée, **non créée ici**. Elle supprimerait le risque de rejeu à l'aveugle.
-- [ ] Ajouter `-v ON_ERROR_STOP=1` à l'étape de migrations de `ci.yml` : recommandé, **non fait ici**. Aucune erreur SQL n'a été relevée dans le journal de la CI rejouée, donc le changement ne devrait pas la faire échouer.
+- [ ] Une **table de suivi des migrations** : à envisager plus tard (issue `dette-technique`), **non créée ici**. Elle supprimerait le risque de rejeu à l'aveugle.
+- [x] `-v ON_ERROR_STOP=1` dans l'étape de migrations de `ci.yml` : **fait** (PR « ci: arrêter l'étape de migrations à la première erreur SQL »).

@@ -51,6 +51,10 @@ disproportionnée pour une équipe réduite.
 - Sauvegardes : automatiques, avec test de restauration périodique — mis en œuvre et
   automatisé par TASK-012, avec RLS active de bout en bout.
 - Rollback : tags Docker + migrations réversibles documentées.
+  *Précision (clôture de BUILD-004, étape 2).* « Documentées » signifie : 21 migrations sur 26 portent une
+  section `DOWN`, entièrement en commentaire, donc jamais exécutée automatiquement. **Cinq n'en ont aucune :
+  `0000`, `0001`, `0002`, `0004` et `0012`.** Pour celles-ci, le retour arrière est une **restauration de
+  sauvegarde**. Voir `docs/runbooks/migrations-et-deploiement.md`, section « C — Retour arrière ».
 
 ## Statut
 
