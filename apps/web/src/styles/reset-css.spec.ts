@@ -17,6 +17,11 @@ describe('reset commun des tailles (box-sizing)', () => {
     );
   });
 
+  it('reset.css remet a zero la marge du corps, comme les maquettes (sinon cadre blanc de 8 px et defilement vertical de 16 px)', () => {
+    const css = read('styles/reset.css').replace(/\/\*[\s\S]*?\*\//g, '');
+    expect(css).toMatch(/body\s*\{\s*margin:\s*0;?\s*\}/);
+  });
+
   it('le layout racine ([locale]/layout.tsx) charge ce fichier : toutes les pages le recoivent', () => {
     expect(read('app/[locale]/layout.tsx')).toMatch(/import\s+'\.\.\/\.\.\/styles\/reset\.css';/);
   });
