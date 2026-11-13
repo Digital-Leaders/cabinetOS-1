@@ -341,6 +341,7 @@ function InternalNote({ id, initial }: { id: string; initial: string | null }) {
       <p className="ad-card-note">{t('detail.note.sub')}</p>
       <textarea
         aria-label={t('detail.note.label')}
+        placeholder={t('detail.note.placeholder')}
         dir="auto"
         value={value}
         maxLength={2000}
