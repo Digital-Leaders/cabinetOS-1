@@ -91,11 +91,17 @@ done
 **A4 — Vérifier : le résultat doit être « VERIFICATION OK »**
 ```bash
 # [A4]
-OUT=$(psql "$ADMIN_DATABASE_URL" -v ON_ERROR_STOP=1 -At -f db/verify-privileges.sql)
-if [ -z "$OUT" ]; then echo "VERIFICATION OK : aucune violation"; else echo "VIOLATIONS :"; echo "$OUT"; fi
+if OUT=$(psql "$ADMIN_DATABASE_URL" -v ON_ERROR_STOP=1 -At -f db/verify-privileges.sql 2>&1); then
+  if [ -z "$OUT" ]; then echo "VERIFICATION OK : aucune violation"; else echo "VIOLATIONS :"; echo "$OUT"; fi
+else
+  echo "ERREUR D'EXECUTION : la verification n'a pas pu s'executer (connexion, droits ou fichier). Ce n'est PAS un « OK »."; echo "$OUT"
+fi
 ```
-**Ne pas se fier au code de sortie** : la requête est un simple `SELECT`, elle rend le code 0 même lorsqu'elle liste des violations.
-Seule la **sortie vide** compte.
+**Deux conditions, toutes les deux nécessaires** pour conclure « OK » :
+1. `psql` **a réussi** (code de sortie 0). Sans cela, la sortie est vide… mais parce que **rien n'a été vérifié**
+   (connexion refusée, mot de passe faux, fichier absent) : le bloc affiche alors « ERREUR D'EXECUTION ».
+2. La **sortie est vide**. La requête est un simple `SELECT` : elle rend le code 0 **même lorsqu'elle liste des violations**.
+   Le code de sortie seul ne suffit donc pas non plus.
 
 `db/verify-privileges.sql` (lecture seule) contrôle : le rôle applicatif existe et n'est ni superutilisateur ni
 `BYPASSRLS` ; les historiques sont en ajout seul ; `platform_admins` est en lecture seule pour l'application ; le rôle
@@ -198,8 +204,11 @@ vérification A4 y passe aussi :
 export RESTORE_URL="${ADMIN_DATABASE_URL%/*}/cabinetos_restauration_test"
 psql "$ADMIN_SERVER_URL" -v ON_ERROR_STOP=1 -c "CREATE DATABASE cabinetos_restauration_test"
 pg_restore --exit-on-error -d "$RESTORE_URL" "$BACKUP_FILE"
-OUT=$(psql "$RESTORE_URL" -v ON_ERROR_STOP=1 -At -f db/verify-privileges.sql)
-if [ -z "$OUT" ]; then echo "RESTAURATION OK : aucune violation"; else echo "VIOLATIONS :"; echo "$OUT"; fi
+if OUT=$(psql "$RESTORE_URL" -v ON_ERROR_STOP=1 -At -f db/verify-privileges.sql 2>&1); then
+  if [ -z "$OUT" ]; then echo "RESTAURATION OK : aucune violation"; else echo "VIOLATIONS :"; echo "$OUT"; fi
+else
+  echo "ERREUR D'EXECUTION : la verification n'a pas pu s'executer. Ce n'est PAS un « OK »."; echo "$OUT"
+fi
 ```
 
 **Mesuré :**
