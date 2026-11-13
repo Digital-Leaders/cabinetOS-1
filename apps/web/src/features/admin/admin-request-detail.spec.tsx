@@ -152,6 +152,14 @@ describe('AdminRequestDetailScreen (TASK-060)', () => {
       expect(screen.getByText('y.bennani@cabinet.ma')).toHaveAttribute('dir', 'ltr');
     });
 
+    it("la note interne a le texte d'exemple de la maquette", async () => {
+      await renderDetail();
+      expect(screen.getByLabelText(d.note.label)).toHaveAttribute(
+        'placeholder',
+        d.note.placeholder,
+      );
+    });
+
     it('une valeur absente (« non renseigne ») suit la langue de la page : aucun sens force', async () => {
       await renderDetail({ structure: { name: 'Cabinet', city: 'Rabat', address: null } }, 'ar');
       for (const empty of screen.getAllByText(a.notSpecified))

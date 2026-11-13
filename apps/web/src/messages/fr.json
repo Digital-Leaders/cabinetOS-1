@@ -449,7 +449,8 @@
         "save": "Enregistrer la note",
         "saving": "Enregistrement…",
         "saved": "✓ Note enregistrée",
-        "error": "La note n'a pas pu être enregistrée. Réessayez."
+        "error": "La note n'a pas pu être enregistrée. Réessayez.",
+        "placeholder": "Ex. Cabinet retrouvé sur Google, nom et adresse concordants."
       },
       "history": {
         "title": "Historique",
@@ -513,8 +514,10 @@
           "member": "rattachement du fondateur comme premier membre",
           "doctor": "création de sa fiche médecin (pré-remplie)"
         },
-        "then": "Puis, séparément : envoi de l'email d'activation. Si l'email échoue, la validation reste acquise et l'envoi pourra être relancé.",
-        "confirm": "Confirmer la validation"
+        "confirm": "Confirmer la validation",
+        "heading": "À la validation :",
+        "thenLabel": "Puis",
+        "thenRest": ", séparément : envoi de l'email d'activation. Si l'email échoue, la validation reste acquise et l'envoi pourra être relancé."
       },
       "complement": {
         "title": "Demander un complément",
@@ -527,17 +530,16 @@
         },
         "otherLabel": "Précisez l'information demandée",
         "messageLabel": "Message au médecin",
-        "messageHint": "Pré-rempli, modifiable.",
+        "messageHint": "pré-rempli, modifiable",
         "confirm": "Envoyer la demande"
       },
       "refuse": {
         "title": "Refuser la demande",
         "lead": "Deux champs distincts, pour ne jamais envoyer par accident une note interne au médecin.",
         "reasonLabel": "Motif interne — non communiqué au demandeur · obligatoire",
-        "reasonHint": "Visible uniquement par l'équipe.",
         "reasonPlaceholder": "Ex. INPE introuvable, aucune concordance sur les sources publiques.",
         "messageLabel": "Message communiqué au demandeur",
-        "messageHint": "Pré-rempli, modifiable.",
+        "messageHint": "pré-rempli, modifiable",
         "sameText": "Le message au demandeur ne peut pas être identique au motif interne.",
         "definitive": "Ce refus est définitif : le demandeur ne pourra pas se réinscrire avec cet email.",
         "confirm": "Refuser la demande"

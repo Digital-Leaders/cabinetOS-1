@@ -142,7 +142,14 @@ describe('fenetre « Valider »', () => {
     for (const step of Object.values(act_.validate.steps)) {
       expect(within(dialog).getByText(step)).toBeInTheDocument();
     }
-    expect(within(dialog).getByText(act_.validate.then)).toBeInTheDocument();
+    // La phrase « Puis, separement : ... » est coupee en deux pour mettre « Puis » en gras (maquette).
+    expect(within(dialog).getByText(act_.validate.thenLabel)).toBeInTheDocument();
+    expect(within(dialog).getByText(act_.validate.thenRest)).toBeInTheDocument();
+    // Structure de la maquette : le nom du medecin est en gras, les etapes sont dans l'encadre « cascade » avec son intitule.
+    expect(within(dialog).getByText(/Dr Youssef Bennani/).tagName).toBe('B');
+    const cascade = within(dialog).getByText(act_.validate.heading).closest('.ad-cascade');
+    expect(cascade).not.toBeNull();
+    for (const step of Object.values(act_.validate.steps)) expect(cascade).toHaveTextContent(step);
     expect(validateMock).not.toHaveBeenCalled();
   });
 
@@ -534,6 +541,43 @@ describe('fenetre « Refuser » : deux champs distincts (R8)', () => {
 });
 
 // ---------------------------------------------------------------------------------------
+describe('structure des fenetres : fidele a la maquette', () => {
+  it("le motif interne du refus est dans l'encadre ROUGE, distinct du message au demandeur (R8)", async () => {
+    const user = userEvent.setup();
+    await renderDetail();
+    const dialog = await open(user, d.actions.refuse);
+    const reason = within(dialog).getByLabelText(act_.refuse.reasonLabel);
+    const message = within(dialog).getByLabelText(new RegExp(act_.refuse.messageLabel));
+    expect(reason.closest('.ad-intbox')).not.toBeNull();
+    // Le message au demandeur n'est PAS dans l'encadre du motif interne : deux zones visuellement separees.
+    expect(message.closest('.ad-intbox')).toBeNull();
+  });
+
+  it("la mention « pre-rempli, modifiable » est dans l'intitule des champs de message, pas sous le champ", async () => {
+    const user = userEvent.setup();
+    await renderDetail();
+    const complement = await open(user, d.actions.complement);
+    const label = within(complement)
+      .getByLabelText(new RegExp(act_.complement.messageLabel))
+      .closest('div')!
+      .querySelector('label')!;
+    expect(label).toHaveTextContent(act_.complement.messageHint);
+    expect(complement.querySelector('.ad-field-hint')).toBeNull();
+  });
+
+  it('les boutons de confirmation reprennent les classes de la page (maquette) : plein pour Valider, contour pour les autres', async () => {
+    const user = userEvent.setup();
+    await renderDetail();
+    expect(screen.getByRole('button', { name: d.actions.validate })).toHaveClass('ad-btn-ok');
+    expect(screen.getByRole('button', { name: d.actions.complement })).toHaveClass('ad-btn-compl');
+    expect(screen.getByRole('button', { name: d.actions.refuse })).toHaveClass('ad-btn-no');
+    const dialog = await open(user, d.actions.validate);
+    expect(within(dialog).getByRole('button', { name: act_.validate.confirm })).toHaveClass(
+      'ad-btn-ok',
+    );
+  });
+});
+
 describe('sens de lecture des textes saisis (page arabe, message francais)', () => {
   it('les champs de saisie des messages et de la precision ont un sens de lecture AUTOMATIQUE', async () => {
     const user = userEvent.setup();

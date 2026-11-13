@@ -160,7 +160,12 @@ function DialogFooter({
   const t = useTranslations('Admin');
   return (
     <div className="ad-dialog-foot">
-      <button type="button" className="ad-btn ad-btn-ghost" onClick={onCancel} disabled={pending}>
+      <button
+        type="button"
+        className="ad-btn ad-btn-ghost ad-btn-cancel"
+        onClick={onCancel}
+        disabled={pending}
+      >
         {t('actions.cancel')}
       </button>
       <button
@@ -187,6 +192,8 @@ function ValidateDialog({
 }) {
   const t = useTranslations('Admin');
   const { pending, error, submit } = useSubmit();
+  // Le nom du medecin est en GRAS dans la maquette : on coupe la phrase traduite autour de lui, sans en changer le texte.
+  const [leadBefore, leadAfter] = t('actions.validate.lead', { name: '\u0000' }).split('\u0000');
 
   return (
     <AdminDialog title={t('actions.validate.title')} onClose={onCancel} busy={pending}>
@@ -199,20 +206,30 @@ function ValidateDialog({
           }, bubbleOf(onSettled));
         }}
       >
-        <p className="ad-dialog-lead">{t('actions.validate.lead', { name: `Dr ${doctorName}` })}</p>
-        <ul className="ad-dialog-list">
-          <li>{t('actions.validate.steps.activate')}</li>
-          <li>{t('actions.validate.steps.organization')}</li>
-          <li>{t('actions.validate.steps.member')}</li>
-          <li>{t('actions.validate.steps.doctor')}</li>
-        </ul>
-        <p className="ad-dialog-note">{t('actions.validate.then')}</p>
+        <p className="ad-dialog-lead">
+          {leadBefore}
+          <b>{`Dr ${doctorName}`}</b>
+          {leadAfter}
+        </p>
+        <div className="ad-cascade">
+          <b>{t('actions.validate.heading')}</b>
+          <ul>
+            <li>{t('actions.validate.steps.activate')}</li>
+            <li>{t('actions.validate.steps.organization')}</li>
+            <li>{t('actions.validate.steps.member')}</li>
+            <li>{t('actions.validate.steps.doctor')}</li>
+          </ul>
+          <div className="ad-cascade-then">
+            <b>{t('actions.validate.thenLabel')}</b>
+            {t('actions.validate.thenRest')}
+          </div>
+        </div>
         <DialogError kind={error} />
         <DialogFooter
           pending={pending}
           onCancel={onCancel}
           confirmLabel={t('actions.validate.confirm')}
-          confirmClass="ad-btn-ok-solid"
+          confirmClass="ad-btn-ok"
         />
       </form>
     </AdminDialog>
@@ -306,7 +323,7 @@ function ComplementDialog({
           pending={pending}
           onCancel={onCancel}
           confirmLabel={t('actions.complement.confirm')}
-          confirmClass="ad-btn-compl-solid"
+          confirmClass="ad-btn-compl"
           confirmDisabled={invalid}
         />
       </form>
@@ -357,7 +374,6 @@ function RefuseDialog({
 
         <MessageField
           label={t('actions.refuse.reasonLabel')}
-          hint={t('actions.refuse.reasonHint')}
           value={internalReason}
           onChange={setInternalReason}
           disabled={pending}
@@ -382,7 +398,7 @@ function RefuseDialog({
           pending={pending}
           onCancel={onCancel}
           confirmLabel={t('actions.refuse.confirm')}
-          confirmClass="ad-btn-no-solid"
+          confirmClass="ad-btn-no"
           confirmDisabled={invalid}
         />
       </form>
@@ -400,7 +416,8 @@ function MessageField({
   internal,
 }: {
   label: string;
-  hint: string;
+  /** Mention integree a l'intitule (« — pre-rempli, modifiable »), comme dans la maquette. Absente pour le motif interne. */
+  hint?: string;
   value: string;
   onChange: (value: string) => void;
   disabled: boolean;
@@ -408,25 +425,39 @@ function MessageField({
   internal?: boolean;
 }) {
   const fieldId = useId();
-  const hintId = useId();
+  const textarea = (
+    <textarea
+      id={fieldId}
+      dir="auto"
+      rows={internal ? 3 : 5}
+      value={value}
+      placeholder={placeholder}
+      maxLength={MAX_ACTION_TEXT_LENGTH}
+      onChange={(e) => onChange(e.target.value)}
+      disabled={disabled}
+      required
+    />
+  );
+
+  // Motif INTERNE du refus : encadre ROUGE, dont le titre est l'intitule du champ (maquette : .intbox). Nettement
+  // distinct du message au demandeur, pour ne jamais envoyer un motif interne par accident (R8).
+  if (internal) {
+    return (
+      <div className="ad-intbox">
+        <label className="ad-intbox-tag" htmlFor={fieldId}>
+          {label}
+        </label>
+        {textarea}
+      </div>
+    );
+  }
   return (
-    <div className={`ad-field${internal ? ' ad-field-internal' : ''}`}>
-      <label htmlFor={fieldId}>{label}</label>
-      <textarea
-        id={fieldId}
-        dir="auto"
-        rows={internal ? 3 : 5}
-        value={value}
-        placeholder={placeholder}
-        maxLength={MAX_ACTION_TEXT_LENGTH}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-        aria-describedby={hintId}
-        required
-      />
-      <p className="ad-field-hint" id={hintId}>
-        {hint}
-      </p>
+    <div className="ad-field">
+      <label htmlFor={fieldId}>
+        {label}
+        {hint && <span className="ad-label-hint"> — {hint}</span>}
+      </label>
+      {textarea}
     </div>
   );
 }

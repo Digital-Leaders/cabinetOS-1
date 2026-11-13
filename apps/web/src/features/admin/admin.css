@@ -536,96 +536,105 @@
   gap: 10px;
   flex-wrap: wrap;
 }
-/* Les trois actions (EA-018, TASK-066) : boutons contours en pied de page ; les boutons PLEINS vivent dans les
- * fenetres de confirmation, pour que le geste decisif soit le bouton de la fenetre, jamais celui de la page. */
-.ad-btn-ok,
-.ad-btn-compl,
-.ad-btn-no {
-  background: #fff;
-}
+/* Les trois actions (EA-018, TASK-066) : styles de la MAQUETTE (admin-validation.html). Les memes classes servent sur la
+ * page et dans les fenetres : « Valider » est PLEIN (teal) ; « Demander un complement » et « Refuser » sont en contour. */
 .ad-btn-ok {
+  background: var(--ad-teal);
+  color: #fff;
   flex: 1;
   min-width: 140px;
-  color: var(--ad-green);
-  border-color: var(--ad-greenbd, #b8dcc6);
+}
+.ad-btn-ok:hover:not(:disabled) {
+  background: var(--ad-teald);
 }
 .ad-btn-compl {
+  background: none;
   color: var(--ad-amber);
   border-color: var(--ad-amberbd);
 }
+.ad-btn-compl:hover:not(:disabled) {
+  background: var(--ad-amberbg);
+}
 .ad-btn-no {
+  background: none;
   color: var(--ad-red);
   border-color: var(--ad-redbd);
 }
-.ad-btn-ok:hover,
-.ad-btn-compl:hover,
-.ad-btn-no:hover {
-  background: var(--ad-wash);
+.ad-btn-no:hover:not(:disabled) {
+  background: var(--ad-redbg);
 }
-.ad-btn-ok-solid,
-.ad-btn-compl-solid,
-.ad-btn-no-solid {
-  color: #fff;
-}
-.ad-btn-ok-solid {
-  background: var(--ad-green);
-}
-.ad-btn-compl-solid {
-  background: var(--ad-amber);
-}
-.ad-btn-no-solid {
-  background: var(--ad-red);
-}
-.ad-btn-ok-solid:disabled,
-.ad-btn-compl-solid:disabled,
-.ad-btn-no-solid:disabled {
+/* Un bouton de confirmation inactif (saisie incomplete, envoi en cours) reste lisible mais clairement inactif. */
+.ad-btn-ok:disabled,
+.ad-btn-compl:disabled,
+.ad-btn-no:disabled {
   opacity: 0.55;
 }
 
-/* ---- fenetres de confirmation ---- */
+/* ---- fenetres de confirmation (maquette : .overlay, .modal) ---- */
 .ad-overlay {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: rgba(26, 43, 52, 0.45);
+  background: rgba(26, 43, 52, 0.42);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 20px;
 }
 .ad-modal {
+  width: 100%;
+  max-width: 440px;
   background: #fff;
   color: var(--ad-ink);
-  border-radius: 12px;
-  box-shadow: var(--ad-shadow);
-  width: 100%;
-  max-width: 520px;
-  max-height: calc(100vh - 32px);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(26, 43, 52, 0.28);
+  padding: 24px 24px 20px;
+  max-height: 90vh;
   overflow-y: auto;
-  padding: 24px;
 }
 .ad-modal:focus {
   outline: none;
 }
 .ad-modal h2 {
   font-size: 17px;
-  margin: 0 0 12px;
+  font-weight: 700;
+  margin: 0 0 6px;
 }
 .ad-dialog-lead {
-  margin: 0 0 10px;
-  font-size: 14px;
+  font-size: 13px;
+  color: var(--ad-grey);
+  margin: 0 0 18px;
+  line-height: 1.5;
 }
-.ad-dialog-list {
-  margin: 0 0 12px;
-  padding-inline-start: 22px;
-  font-size: 14px;
-  line-height: 1.7;
+/* Etapes de la validation (maquette : .cascade) */
+.ad-cascade {
+  background: var(--ad-wash2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 6px 0 4px;
+  font-size: 12.5px;
+  color: var(--ad-teald);
+  line-height: 1.6;
+}
+.ad-cascade b {
+  font-weight: 700;
+}
+.ad-cascade ul {
+  margin: 6px 0 0;
+  padding-inline-start: 18px;
+}
+.ad-cascade li {
+  margin-bottom: 2px;
+}
+.ad-cascade-then {
+  margin-top: 8px;
 }
 .ad-dialog-note {
   margin: 0 0 14px;
   font-size: 13px;
   color: var(--ad-grey);
 }
+/* AJOUT hors maquette : rappel que le refus est definitif (ADR-0021 P2), a valider par le Product Owner */
 .ad-dialog-warning {
   background: var(--ad-amberbg);
   color: var(--ad-amber);
@@ -633,9 +642,10 @@
   border-radius: 8px;
   padding: 9px 12px;
   font-weight: 600;
+  margin-top: 14px;
 }
 .ad-dialog-error {
-  margin: 0 0 12px;
+  margin: 14px 0 0;
   padding: 9px 12px;
   background: var(--ad-redbg);
   border: 1px solid var(--ad-redbd);
@@ -646,43 +656,69 @@
 .ad-dialog-foot {
   display: flex;
   gap: 10px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  margin-top: 16px;
+  margin-top: 20px;
+}
+.ad-dialog-foot .ad-btn {
+  flex: 1;
+}
+.ad-btn-ghost.ad-btn-cancel,
+.ad-dialog-foot .ad-btn-ghost {
+  background: none;
+  color: var(--ad-grey);
+  border-color: var(--ad-rule);
+  padding: 11px 18px;
+}
+.ad-dialog-foot .ad-btn-ghost:hover:not(:disabled) {
+  background: var(--ad-wash);
+  color: var(--ad-ink);
+  border-color: var(--ad-rule);
 }
 .ad-fieldset {
   border: 0;
   padding: 0;
-  margin: 0 0 14px;
+  margin: 0;
 }
+.ad-modal label,
 .ad-fieldset legend {
-  font-size: 13px;
+  display: block;
+  font-size: 12.5px;
   font-weight: 600;
+  color: var(--ad-ink);
+  margin: 14px 0 6px;
   padding: 0;
-  margin-bottom: 8px;
 }
-.ad-radio {
+.ad-label-hint {
+  color: var(--ad-hint);
+  font-weight: 500;
+}
+/* Choix du type d'information (maquette : .radio) : cases encadrees */
+.ad-modal label.ad-radio {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 9px;
-  padding: 8px 0;
-  font-size: 14px;
+  padding: 9px 11px;
+  border: 1px solid var(--ad-rule);
+  border-radius: 8px;
+  margin: 0 0 8px;
   cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 400;
+}
+.ad-modal label.ad-radio:hover {
+  background: var(--ad-wash);
+}
+.ad-radio input {
+  margin: 2px 0 0;
+  accent-color: var(--ad-teal);
 }
 .ad-field {
-  margin: 0 0 14px;
+  margin: 0;
 }
-.ad-field label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-.ad-field input[type='text'],
-.ad-field textarea {
+.ad-modal input[type='text'],
+.ad-modal textarea {
   width: 100%;
-  font: inherit;
-  font-size: 14px;
+  font-family: inherit;
+  font-size: 13.5px;
   color: var(--ad-ink);
   background: #fff;
   border: 1px solid var(--ad-rule);
@@ -690,23 +726,37 @@
   padding: 9px 11px;
   resize: vertical;
 }
-.ad-field textarea::placeholder {
+.ad-modal textarea::placeholder {
   color: var(--ad-hint);
 }
-.ad-field input:focus,
-.ad-field textarea:focus {
-  outline: 2px solid var(--ad-teal);
-  outline-offset: 1px;
+.ad-modal input:focus,
+.ad-modal textarea:focus {
+  outline: none;
+  border-color: var(--ad-teal);
+  box-shadow: 0 0 0 3px rgba(14, 110, 120, 0.1);
 }
-/* Le motif interne est visuellement distinct : il ne doit JAMAIS etre confondu avec le message au demandeur. */
-.ad-field-internal textarea {
-  background: var(--ad-wash);
-  border-color: var(--ad-hint);
+/* Motif INTERNE du refus (maquette : .intbox) : encadre ROUGE, nettement distinct du message au demandeur (R8) */
+.ad-intbox {
+  background: var(--ad-redbg);
+  border: 1px solid var(--ad-redbd);
+  border-radius: 8px;
+  padding: 11px 12px;
+  margin-top: 6px;
 }
-.ad-field-hint {
-  margin: 5px 0 0;
-  font-size: 12px;
-  color: var(--ad-hint);
+.ad-modal .ad-intbox label.ad-intbox-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--ad-red);
+  margin: 0 0 6px;
+}
+.ad-intbox textarea {
+  border-color: var(--ad-redbd);
+}
+.ad-intbox textarea:focus {
+  border-color: var(--ad-red);
+  box-shadow: 0 0 0 3px rgba(179, 53, 43, 0.12);
 }
 
 /* ---- bandeaux de resultat ---- */
